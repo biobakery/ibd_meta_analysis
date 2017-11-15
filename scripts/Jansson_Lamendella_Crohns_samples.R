@@ -21,7 +21,7 @@ sample_table <- dbGetQuery(sra_con, paste0("select * from sample where sample_ac
 sample_common <- intersect(meta_raw$sample_alias, sample_table$sample_alias)
 meta_raw <- meta_raw %>% subset(sample_alias %in% sample_common)
 sample_table <- sample_table %>% subset(sample_alias %in% sample_common)
-
+meta_merged <- 
 # matched sample accessions
 sample_accession <- sample_table$sample_accession
 write.table(sample_accession, 
