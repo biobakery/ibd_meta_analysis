@@ -995,4 +995,10 @@ Content type 'unknown' length 14720654 bytes (14.0 MB)
 ==================================================
 trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746645/ERR1746645.fastq.gz'
 Content type 'unknown' length 26207897 bytes (25.0 MB)
-=================================================
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746646/ERR1746646.fastq.gz'
+Content type 'unknown' length 16057982 bytes (15.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746647/ERR1746647.fastq.gz'
+Content type 'unknown' length 24942545 bytes (23.8 MB)
+=====================
