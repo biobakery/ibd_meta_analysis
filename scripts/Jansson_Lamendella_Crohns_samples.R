@@ -1,3 +1,4 @@
+setwd("/n/hutlab11_nobackup/users/syma/ibd_meta_analysis/")
 source("scripts/source.R")
 study <- "Jansson_Lamendella_Crohns"
 
