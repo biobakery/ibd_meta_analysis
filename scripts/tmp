@@ -1,0 +1,998 @@
+> setwd("/n/hutlab11_nobackup/users/syma/ibd_meta_analysis/")
+> source("scripts/source.R")
+Loading required package: RSQLite
+Loading required package: graph
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, sd, var, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, cbind, colMeans, colnames,
+    colSums, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+    grepl, intersect, is.unsorted, lapply, lengths, Map, mapply, match,
+    mget, order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+    rbind, Reduce, rowMeans, rownames, rowSums, sapply, setdiff, sort,
+    table, tapply, union, unique, unsplit, which, which.max, which.min
+
+Loading required package: RCurl
+Loading required package: bitops
+Warning: program compiled against libxml 209 using older 207
+Setting options('download.file.method.GEOquery'='auto')
+Setting options('GEOquery.inmemory.gpl'=FALSE)
+> study <- "Jansson_Lamendella_Crohns"
+> 
+> meta_raw <- read.table(paste0("raw/", study, "/metadata_raw.txt"),
++                        header = T,
++                        sep = '\t',
++                        stringsAsFactors = F,
++                        check.names = F)
+> meta_raw$sample_alias <- paste0('qiita_sid_1629:', meta_raw$sample_name)
+> 
+> sra_con <- dbConnect(SQLite(), paste0(data.dir, "SRAdb/SRAmetadb.sqlite"))
+> # sample accessions for the sequences
+> sample_accesion <- sraConvert('ERP020401', sra_con = sra_con)$sample %>% unique
+> # table of sample attributes
+> sample_table <- dbGetQuery(sra_con, paste0("select * from sample where sample_accession in (",
++                                            sample_accesion %>% 
++                                              paste0("'", ., "'") %>% 
++                                              paste(collapse = ', '),
++                                            ")"))
+> sample_common <- intersect(meta_raw$sample_alias, sample_table$sample_alias)
+> meta_raw <- meta_raw %>% subset(sample_alias %in% sample_common)
+> sample_table <- sample_table %>% subset(sample_alias %in% sample_common)
+> 
+> # matched sample accessions
+> sample_accession <- sample_table$sample_accession
+> write.table(sample_accession, 
++             file = 'raw/Jansson_Lamendella_Crohns/sample_accession.txt',
++             row.names = F,
++             col.names = F,
++             quote = FALSE,
++             sep = '\t')
+> 
+> # getting fastq files
+> dir.create(paste0(data.dir, "fastq/", study, "/"),
++            recursive = T)
+> # only download those that are not already present
+> fastq_files <- list.files(paste0(data.dir, "fastq/", study, "/"))
+> samples_to_get <- fastq_files %>% 
++   gsub(".tar.gz", "", ., fixed = T) %>% 
++   setdiff(sample_accesion, .)
+> getSRAfile(samples_to_get, sra_con, fileType = 'fastq', 
++            destDir = paste0(data.dir, "fastq/", study, "/"))
+Files are saved to: 
+'/n/hutlab11_nobackup/data/ibd_meta_analysis/fastq/Jansson_Lamendella_Crohns/'
+
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746339/ERR1746339.fastq.gz'
+Content type 'unknown' length 15078154 bytes (14.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746340/ERR1746340.fastq.gz'
+Content type 'unknown' length 7677738 bytes (7.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746341/ERR1746341.fastq.gz'
+Content type 'unknown' length 19327377 bytes (18.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746342/ERR1746342.fastq.gz'
+Content type 'unknown' length 26059359 bytes (24.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746343/ERR1746343.fastq.gz'
+Content type 'unknown' length 14699329 bytes (14.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746344/ERR1746344.fastq.gz'
+Content type 'unknown' length 20275288 bytes (19.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746345/ERR1746345.fastq.gz'
+Content type 'unknown' length 10769626 bytes (10.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746346/ERR1746346.fastq.gz'
+Content type 'unknown' length 17489969 bytes (16.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746347/ERR1746347.fastq.gz'
+Content type 'unknown' length 27206971 bytes (25.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746348/ERR1746348.fastq.gz'
+Content type 'unknown' length 30701119 bytes (29.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746349/ERR1746349.fastq.gz'
+Content type 'unknown' length 19948850 bytes (19.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746350/ERR1746350.fastq.gz'
+Content type 'unknown' length 20461027 bytes (19.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746351/ERR1746351.fastq.gz'
+Content type 'unknown' length 11191282 bytes (10.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746352/ERR1746352.fastq.gz'
+Content type 'unknown' length 11190347 bytes (10.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746353/ERR1746353.fastq.gz'
+Content type 'unknown' length 12191731 bytes (11.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746354/ERR1746354.fastq.gz'
+Content type 'unknown' length 25589460 bytes (24.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746355/ERR1746355.fastq.gz'
+Content type 'unknown' length 90195214 bytes (86.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746356/ERR1746356.fastq.gz'
+Content type 'unknown' length 8782520 bytes (8.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746357/ERR1746357.fastq.gz'
+Content type 'unknown' length 9898125 bytes (9.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746358/ERR1746358.fastq.gz'
+Content type 'unknown' length 22530820 bytes (21.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746359/ERR1746359.fastq.gz'
+Content type 'unknown' length 2931689 bytes (2.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746360/ERR1746360.fastq.gz'
+Content type 'unknown' length 18251671 bytes (17.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746361/ERR1746361.fastq.gz'
+Content type 'unknown' length 7115815 bytes (6.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746362/ERR1746362.fastq.gz'
+Content type 'unknown' length 4732151 bytes (4.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746363/ERR1746363.fastq.gz'
+Content type 'unknown' length 8216601 bytes (7.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746364/ERR1746364.fastq.gz'
+Content type 'unknown' length 13049921 bytes (12.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746365/ERR1746365.fastq.gz'
+Content type 'unknown' length 43352566 bytes (41.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746366/ERR1746366.fastq.gz'
+Content type 'unknown' length 14366925 bytes (13.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746367/ERR1746367.fastq.gz'
+Content type 'unknown' length 12675812 bytes (12.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746368/ERR1746368.fastq.gz'
+Content type 'unknown' length 9601016 bytes (9.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746369/ERR1746369.fastq.gz'
+Content type 'unknown' length 16509163 bytes (15.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746370/ERR1746370.fastq.gz'
+Content type 'unknown' length 6514879 bytes (6.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746371/ERR1746371.fastq.gz'
+Content type 'unknown' length 5538149 bytes (5.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746372/ERR1746372.fastq.gz'
+Content type 'unknown' length 4381937 bytes (4.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746373/ERR1746373.fastq.gz'
+Content type 'unknown' length 66747507 bytes (63.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746374/ERR1746374.fastq.gz'
+Content type 'unknown' length 17160551 bytes (16.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746375/ERR1746375.fastq.gz'
+Content type 'unknown' length 15598834 bytes (14.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746376/ERR1746376.fastq.gz'
+Content type 'unknown' length 7756626 bytes (7.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746377/ERR1746377.fastq.gz'
+Content type 'unknown' length 16645213 bytes (15.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746378/ERR1746378.fastq.gz'
+Content type 'unknown' length 2942720 bytes (2.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746379/ERR1746379.fastq.gz'
+Content type 'unknown' length 57266110 bytes (54.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746380/ERR1746380.fastq.gz'
+Content type 'unknown' length 28802651 bytes (27.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746381/ERR1746381.fastq.gz'
+Content type 'unknown' length 9906669 bytes (9.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746382/ERR1746382.fastq.gz'
+Content type 'unknown' length 3837891 bytes (3.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746383/ERR1746383.fastq.gz'
+Content type 'unknown' length 14773159 bytes (14.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746384/ERR1746384.fastq.gz'
+Content type 'unknown' length 13135608 bytes (12.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746385/ERR1746385.fastq.gz'
+Content type 'unknown' length 15821954 bytes (15.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746386/ERR1746386.fastq.gz'
+Content type 'unknown' length 21182911 bytes (20.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746387/ERR1746387.fastq.gz'
+Content type 'unknown' length 7112202 bytes (6.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746388/ERR1746388.fastq.gz'
+Content type 'unknown' length 10383751 bytes (9.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746389/ERR1746389.fastq.gz'
+Content type 'unknown' length 5880365 bytes (5.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746390/ERR1746390.fastq.gz'
+Content type 'unknown' length 8587632 bytes (8.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746391/ERR1746391.fastq.gz'
+Content type 'unknown' length 4481954 bytes (4.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746392/ERR1746392.fastq.gz'
+Content type 'unknown' length 34690986 bytes (33.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746393/ERR1746393.fastq.gz'
+Content type 'unknown' length 14877998 bytes (14.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746394/ERR1746394.fastq.gz'
+Content type 'unknown' length 10770393 bytes (10.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746395/ERR1746395.fastq.gz'
+Content type 'unknown' length 14391931 bytes (13.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746396/ERR1746396.fastq.gz'
+Content type 'unknown' length 7919189 bytes (7.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746397/ERR1746397.fastq.gz'
+Content type 'unknown' length 21127298 bytes (20.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746398/ERR1746398.fastq.gz'
+Content type 'unknown' length 9033711 bytes (8.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746399/ERR1746399.fastq.gz'
+Content type 'unknown' length 13253173 bytes (12.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746400/ERR1746400.fastq.gz'
+Content type 'unknown' length 9445471 bytes (9.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746401/ERR1746401.fastq.gz'
+Content type 'unknown' length 11390164 bytes (10.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746402/ERR1746402.fastq.gz'
+Content type 'unknown' length 16604976 bytes (15.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746403/ERR1746403.fastq.gz'
+Content type 'unknown' length 7078465 bytes (6.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746404/ERR1746404.fastq.gz'
+Content type 'unknown' length 20135461 bytes (19.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746405/ERR1746405.fastq.gz'
+Content type 'unknown' length 27440772 bytes (26.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746406/ERR1746406.fastq.gz'
+Content type 'unknown' length 12998847 bytes (12.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746407/ERR1746407.fastq.gz'
+Content type 'unknown' length 7299137 bytes (7.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746408/ERR1746408.fastq.gz'
+Content type 'unknown' length 17345472 bytes (16.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746409/ERR1746409.fastq.gz'
+Content type 'unknown' length 24236565 bytes (23.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746410/ERR1746410.fastq.gz'
+Content type 'unknown' length 20687210 bytes (19.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746411/ERR1746411.fastq.gz'
+Content type 'unknown' length 6784720 bytes (6.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746412/ERR1746412.fastq.gz'
+Content type 'unknown' length 15681192 bytes (15.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746413/ERR1746413.fastq.gz'
+Content type 'unknown' length 18435725 bytes (17.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746414/ERR1746414.fastq.gz'
+Content type 'unknown' length 16519871 bytes (15.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746415/ERR1746415.fastq.gz'
+Content type 'unknown' length 19135641 bytes (18.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746416/ERR1746416.fastq.gz'
+Content type 'unknown' length 4931771 bytes (4.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746417/ERR1746417.fastq.gz'
+Content type 'unknown' length 5485859 bytes (5.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746418/ERR1746418.fastq.gz'
+Content type 'unknown' length 11176269 bytes (10.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746419/ERR1746419.fastq.gz'
+Content type 'unknown' length 12084687 bytes (11.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746420/ERR1746420.fastq.gz'
+Content type 'unknown' length 14308876 bytes (13.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746421/ERR1746421.fastq.gz'
+Content type 'unknown' length 22586764 bytes (21.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746422/ERR1746422.fastq.gz'
+Content type 'unknown' length 6409603 bytes (6.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746423/ERR1746423.fastq.gz'
+Content type 'unknown' length 57688300 bytes (55.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746424/ERR1746424.fastq.gz'
+Content type 'unknown' length 11316827 bytes (10.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746425/ERR1746425.fastq.gz'
+Content type 'unknown' length 38048495 bytes (36.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746426/ERR1746426.fastq.gz'
+Content type 'unknown' length 28832672 bytes (27.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746427/ERR1746427.fastq.gz'
+Content type 'unknown' length 7793223 bytes (7.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746428/ERR1746428.fastq.gz'
+Content type 'unknown' length 39748118 bytes (37.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746429/ERR1746429.fastq.gz'
+Content type 'unknown' length 14810841 bytes (14.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746430/ERR1746430.fastq.gz'
+Content type 'unknown' length 12903259 bytes (12.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746431/ERR1746431.fastq.gz'
+Content type 'unknown' length 27324836 bytes (26.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746432/ERR1746432.fastq.gz'
+Content type 'unknown' length 19488659 bytes (18.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746433/ERR1746433.fastq.gz'
+Content type 'unknown' length 35960587 bytes (34.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746434/ERR1746434.fastq.gz'
+Content type 'unknown' length 18419936 bytes (17.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746435/ERR1746435.fastq.gz'
+Content type 'unknown' length 9994832 bytes (9.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746436/ERR1746436.fastq.gz'
+Content type 'unknown' length 12868562 bytes (12.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746437/ERR1746437.fastq.gz'
+Content type 'unknown' length 21477655 bytes (20.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746438/ERR1746438.fastq.gz'
+Content type 'unknown' length 6806505 bytes (6.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746439/ERR1746439.fastq.gz'
+Content type 'unknown' length 21531800 bytes (20.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746440/ERR1746440.fastq.gz'
+Content type 'unknown' length 3228630 bytes (3.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746441/ERR1746441.fastq.gz'
+Content type 'unknown' length 14201380 bytes (13.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746442/ERR1746442.fastq.gz'
+Content type 'unknown' length 10925995 bytes (10.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746443/ERR1746443.fastq.gz'
+Content type 'unknown' length 23302358 bytes (22.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746444/ERR1746444.fastq.gz'
+Content type 'unknown' length 13187734 bytes (12.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746445/ERR1746445.fastq.gz'
+Content type 'unknown' length 16809540 bytes (16.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746446/ERR1746446.fastq.gz'
+Content type 'unknown' length 5282022 bytes (5.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746447/ERR1746447.fastq.gz'
+Content type 'unknown' length 10207260 bytes (9.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746448/ERR1746448.fastq.gz'
+Content type 'unknown' length 33670868 bytes (32.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746449/ERR1746449.fastq.gz'
+Content type 'unknown' length 18658593 bytes (17.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746450/ERR1746450.fastq.gz'
+Content type 'unknown' length 10719273 bytes (10.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746451/ERR1746451.fastq.gz'
+Content type 'unknown' length 23734059 bytes (22.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746452/ERR1746452.fastq.gz'
+Content type 'unknown' length 19176995 bytes (18.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746453/ERR1746453.fastq.gz'
+Content type 'unknown' length 18948949 bytes (18.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746454/ERR1746454.fastq.gz'
+Content type 'unknown' length 24761692 bytes (23.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746455/ERR1746455.fastq.gz'
+Content type 'unknown' length 4941464 bytes (4.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746456/ERR1746456.fastq.gz'
+Content type 'unknown' length 25960741 bytes (24.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746457/ERR1746457.fastq.gz'
+Content type 'unknown' length 5159757 bytes (4.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746458/ERR1746458.fastq.gz'
+Content type 'unknown' length 13213773 bytes (12.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746459/ERR1746459.fastq.gz'
+Content type 'unknown' length 19358644 bytes (18.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746460/ERR1746460.fastq.gz'
+Content type 'unknown' length 12858409 bytes (12.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746461/ERR1746461.fastq.gz'
+Content type 'unknown' length 26523331 bytes (25.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746462/ERR1746462.fastq.gz'
+Content type 'unknown' length 13398008 bytes (12.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746463/ERR1746463.fastq.gz'
+Content type 'unknown' length 3701366 bytes (3.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746464/ERR1746464.fastq.gz'
+Content type 'unknown' length 48901948 bytes (46.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746465/ERR1746465.fastq.gz'
+Content type 'unknown' length 12704284 bytes (12.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746466/ERR1746466.fastq.gz'
+Content type 'unknown' length 5275686 bytes (5.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746467/ERR1746467.fastq.gz'
+Content type 'unknown' length 25708947 bytes (24.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746468/ERR1746468.fastq.gz'
+Content type 'unknown' length 52889604 bytes (50.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746469/ERR1746469.fastq.gz'
+Content type 'unknown' length 40721053 bytes (38.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746470/ERR1746470.fastq.gz'
+Content type 'unknown' length 19345688 bytes (18.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746471/ERR1746471.fastq.gz'
+Content type 'unknown' length 12669355 bytes (12.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746472/ERR1746472.fastq.gz'
+Content type 'unknown' length 8484310 bytes (8.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746473/ERR1746473.fastq.gz'
+Content type 'unknown' length 13971578 bytes (13.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746474/ERR1746474.fastq.gz'
+Content type 'unknown' length 30007337 bytes (28.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746475/ERR1746475.fastq.gz'
+Content type 'unknown' length 57995390 bytes (55.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746476/ERR1746476.fastq.gz'
+Content type 'unknown' length 5997391 bytes (5.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746477/ERR1746477.fastq.gz'
+Content type 'unknown' length 29626852 bytes (28.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746478/ERR1746478.fastq.gz'
+Content type 'unknown' length 10165600 bytes (9.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746479/ERR1746479.fastq.gz'
+Content type 'unknown' length 9491867 bytes (9.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746480/ERR1746480.fastq.gz'
+Content type 'unknown' length 23080583 bytes (22.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746481/ERR1746481.fastq.gz'
+Content type 'unknown' length 40850746 bytes (39.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746482/ERR1746482.fastq.gz'
+Content type 'unknown' length 58026601 bytes (55.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746483/ERR1746483.fastq.gz'
+Content type 'unknown' length 3619210 bytes (3.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746484/ERR1746484.fastq.gz'
+Content type 'unknown' length 29731352 bytes (28.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746485/ERR1746485.fastq.gz'
+Content type 'unknown' length 30104908 bytes (28.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746486/ERR1746486.fastq.gz'
+Content type 'unknown' length 33228325 bytes (31.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746487/ERR1746487.fastq.gz'
+Content type 'unknown' length 11106692 bytes (10.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746488/ERR1746488.fastq.gz'
+Content type 'unknown' length 4713181 bytes (4.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746489/ERR1746489.fastq.gz'
+Content type 'unknown' length 16739999 bytes (16.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746490/ERR1746490.fastq.gz'
+Content type 'unknown' length 12269853 bytes (11.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746491/ERR1746491.fastq.gz'
+Content type 'unknown' length 46707649 bytes (44.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746492/ERR1746492.fastq.gz'
+Content type 'unknown' length 21177082 bytes (20.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746493/ERR1746493.fastq.gz'
+Content type 'unknown' length 27911397 bytes (26.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746494/ERR1746494.fastq.gz'
+Content type 'unknown' length 19674353 bytes (18.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746495/ERR1746495.fastq.gz'
+Content type 'unknown' length 14053473 bytes (13.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746496/ERR1746496.fastq.gz'
+Content type 'unknown' length 5469242 bytes (5.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746497/ERR1746497.fastq.gz'
+Content type 'unknown' length 27610835 bytes (26.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746498/ERR1746498.fastq.gz'
+Content type 'unknown' length 29349106 bytes (28.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746499/ERR1746499.fastq.gz'
+Content type 'unknown' length 8800460 bytes (8.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746500/ERR1746500.fastq.gz'
+Content type 'unknown' length 30469383 bytes (29.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746501/ERR1746501.fastq.gz'
+Content type 'unknown' length 14682617 bytes (14.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746502/ERR1746502.fastq.gz'
+Content type 'unknown' length 24513505 bytes (23.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746503/ERR1746503.fastq.gz'
+Content type 'unknown' length 18994812 bytes (18.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746504/ERR1746504.fastq.gz'
+Content type 'unknown' length 10087205 bytes (9.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746505/ERR1746505.fastq.gz'
+Content type 'unknown' length 4197295 bytes (4.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746506/ERR1746506.fastq.gz'
+Content type 'unknown' length 27682733 bytes (26.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746507/ERR1746507.fastq.gz'
+Content type 'unknown' length 19882053 bytes (19.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746508/ERR1746508.fastq.gz'
+Content type 'unknown' length 21282185 bytes (20.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746509/ERR1746509.fastq.gz'
+Content type 'unknown' length 9958778 bytes (9.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746510/ERR1746510.fastq.gz'
+Content type 'unknown' length 11931413 bytes (11.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746511/ERR1746511.fastq.gz'
+Content type 'unknown' length 29102065 bytes (27.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746512/ERR1746512.fastq.gz'
+Content type 'unknown' length 9898436 bytes (9.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746513/ERR1746513.fastq.gz'
+Content type 'unknown' length 19808582 bytes (18.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746514/ERR1746514.fastq.gz'
+Content type 'unknown' length 9966522 bytes (9.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746515/ERR1746515.fastq.gz'
+Content type 'unknown' length 25158174 bytes (24.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746516/ERR1746516.fastq.gz'
+Content type 'unknown' length 34422810 bytes (32.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746517/ERR1746517.fastq.gz'
+Content type 'unknown' length 18039698 bytes (17.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746518/ERR1746518.fastq.gz'
+Content type 'unknown' length 12232478 bytes (11.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746519/ERR1746519.fastq.gz'
+Content type 'unknown' length 38244253 bytes (36.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746520/ERR1746520.fastq.gz'
+Content type 'unknown' length 39297851 bytes (37.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746521/ERR1746521.fastq.gz'
+Content type 'unknown' length 30301355 bytes (28.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746522/ERR1746522.fastq.gz'
+Content type 'unknown' length 35261744 bytes (33.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746523/ERR1746523.fastq.gz'
+Content type 'unknown' length 7610595 bytes (7.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746524/ERR1746524.fastq.gz'
+Content type 'unknown' length 13082784 bytes (12.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746525/ERR1746525.fastq.gz'
+Content type 'unknown' length 814235 bytes (795 KB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746526/ERR1746526.fastq.gz'
+Content type 'unknown' length 14728892 bytes (14.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746527/ERR1746527.fastq.gz'
+Content type 'unknown' length 15862612 bytes (15.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746528/ERR1746528.fastq.gz'
+Content type 'unknown' length 29606683 bytes (28.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746529/ERR1746529.fastq.gz'
+Content type 'unknown' length 24122052 bytes (23.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746530/ERR1746530.fastq.gz'
+Content type 'unknown' length 37933557 bytes (36.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746531/ERR1746531.fastq.gz'
+Content type 'unknown' length 12487720 bytes (11.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746532/ERR1746532.fastq.gz'
+Content type 'unknown' length 14970318 bytes (14.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746533/ERR1746533.fastq.gz'
+Content type 'unknown' length 11462570 bytes (10.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746534/ERR1746534.fastq.gz'
+Content type 'unknown' length 45433381 bytes (43.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746535/ERR1746535.fastq.gz'
+Content type 'unknown' length 25716643 bytes (24.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746536/ERR1746536.fastq.gz'
+Content type 'unknown' length 13328691 bytes (12.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746537/ERR1746537.fastq.gz'
+Content type 'unknown' length 28274722 bytes (27.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746538/ERR1746538.fastq.gz'
+Content type 'unknown' length 5449466 bytes (5.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746539/ERR1746539.fastq.gz'
+Content type 'unknown' length 9585144 bytes (9.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746540/ERR1746540.fastq.gz'
+Content type 'unknown' length 13134782 bytes (12.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746541/ERR1746541.fastq.gz'
+Content type 'unknown' length 10348322 bytes (9.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746542/ERR1746542.fastq.gz'
+Content type 'unknown' length 12146773 bytes (11.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746543/ERR1746543.fastq.gz'
+Content type 'unknown' length 5780248 bytes (5.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746544/ERR1746544.fastq.gz'
+Content type 'unknown' length 14305941 bytes (13.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746545/ERR1746545.fastq.gz'
+Content type 'unknown' length 11320839 bytes (10.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746546/ERR1746546.fastq.gz'
+Content type 'unknown' length 20360992 bytes (19.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746547/ERR1746547.fastq.gz'
+Content type 'unknown' length 22011692 bytes (21.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746548/ERR1746548.fastq.gz'
+Content type 'unknown' length 42101929 bytes (40.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746549/ERR1746549.fastq.gz'
+Content type 'unknown' length 32603063 bytes (31.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746550/ERR1746550.fastq.gz'
+Content type 'unknown' length 17394320 bytes (16.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746551/ERR1746551.fastq.gz'
+Content type 'unknown' length 13040436 bytes (12.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746552/ERR1746552.fastq.gz'
+Content type 'unknown' length 16025203 bytes (15.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746553/ERR1746553.fastq.gz'
+Content type 'unknown' length 16371873 bytes (15.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746554/ERR1746554.fastq.gz'
+Content type 'unknown' length 9068071 bytes (8.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746555/ERR1746555.fastq.gz'
+Content type 'unknown' length 12904927 bytes (12.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746556/ERR1746556.fastq.gz'
+Content type 'unknown' length 30760019 bytes (29.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746557/ERR1746557.fastq.gz'
+Content type 'unknown' length 26194428 bytes (25.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746558/ERR1746558.fastq.gz'
+Content type 'unknown' length 28592669 bytes (27.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746559/ERR1746559.fastq.gz'
+Content type 'unknown' length 45514898 bytes (43.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746560/ERR1746560.fastq.gz'
+Content type 'unknown' length 13152389 bytes (12.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746561/ERR1746561.fastq.gz'
+Content type 'unknown' length 26270576 bytes (25.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746562/ERR1746562.fastq.gz'
+Content type 'unknown' length 34178348 bytes (32.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746563/ERR1746563.fastq.gz'
+Content type 'unknown' length 10376137 bytes (9.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746564/ERR1746564.fastq.gz'
+Content type 'unknown' length 21304513 bytes (20.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746565/ERR1746565.fastq.gz'
+Content type 'unknown' length 9129945 bytes (8.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746566/ERR1746566.fastq.gz'
+Content type 'unknown' length 27517612 bytes (26.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746567/ERR1746567.fastq.gz'
+Content type 'unknown' length 20495295 bytes (19.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746568/ERR1746568.fastq.gz'
+Content type 'unknown' length 15301826 bytes (14.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746569/ERR1746569.fastq.gz'
+Content type 'unknown' length 32777607 bytes (31.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746570/ERR1746570.fastq.gz'
+Content type 'unknown' length 9528650 bytes (9.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746571/ERR1746571.fastq.gz'
+Content type 'unknown' length 1392644 bytes (1.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746572/ERR1746572.fastq.gz'
+Content type 'unknown' length 24625472 bytes (23.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746573/ERR1746573.fastq.gz'
+Content type 'unknown' length 58082199 bytes (55.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746574/ERR1746574.fastq.gz'
+Content type 'unknown' length 12953198 bytes (12.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746575/ERR1746575.fastq.gz'
+Content type 'unknown' length 10187135 bytes (9.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746576/ERR1746576.fastq.gz'
+Content type 'unknown' length 15798510 bytes (15.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746577/ERR1746577.fastq.gz'
+Content type 'unknown' length 27888245 bytes (26.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746578/ERR1746578.fastq.gz'
+Content type 'unknown' length 20254231 bytes (19.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746579/ERR1746579.fastq.gz'
+Content type 'unknown' length 46055798 bytes (43.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746580/ERR1746580.fastq.gz'
+Content type 'unknown' length 5815026 bytes (5.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746581/ERR1746581.fastq.gz'
+Content type 'unknown' length 10597496 bytes (10.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746582/ERR1746582.fastq.gz'
+Content type 'unknown' length 9464346 bytes (9.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746583/ERR1746583.fastq.gz'
+Content type 'unknown' length 20919207 bytes (20.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746584/ERR1746584.fastq.gz'
+Content type 'unknown' length 9208266 bytes (8.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746585/ERR1746585.fastq.gz'
+Content type 'unknown' length 5971079 bytes (5.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746586/ERR1746586.fastq.gz'
+Content type 'unknown' length 11048519 bytes (10.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746587/ERR1746587.fastq.gz'
+Content type 'unknown' length 20577777 bytes (19.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746588/ERR1746588.fastq.gz'
+Content type 'unknown' length 9121779 bytes (8.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746589/ERR1746589.fastq.gz'
+Content type 'unknown' length 23057661 bytes (22.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746590/ERR1746590.fastq.gz'
+Content type 'unknown' length 14034710 bytes (13.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746591/ERR1746591.fastq.gz'
+Content type 'unknown' length 29501229 bytes (28.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746592/ERR1746592.fastq.gz'
+Content type 'unknown' length 36224339 bytes (34.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746593/ERR1746593.fastq.gz'
+Content type 'unknown' length 7289029 bytes (7.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746594/ERR1746594.fastq.gz'
+Content type 'unknown' length 14879630 bytes (14.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746595/ERR1746595.fastq.gz'
+Content type 'unknown' length 4593730 bytes (4.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746596/ERR1746596.fastq.gz'
+Content type 'unknown' length 2893860 bytes (2.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746597/ERR1746597.fastq.gz'
+Content type 'unknown' length 16747413 bytes (16.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746598/ERR1746598.fastq.gz'
+Content type 'unknown' length 11302072 bytes (10.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746599/ERR1746599.fastq.gz'
+Content type 'unknown' length 16810938 bytes (16.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746600/ERR1746600.fastq.gz'
+Content type 'unknown' length 2806359 bytes (2.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746601/ERR1746601.fastq.gz'
+Content type 'unknown' length 10268041 bytes (9.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746602/ERR1746602.fastq.gz'
+Content type 'unknown' length 9860267 bytes (9.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746603/ERR1746603.fastq.gz'
+Content type 'unknown' length 39596626 bytes (37.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746604/ERR1746604.fastq.gz'
+Content type 'unknown' length 31231828 bytes (29.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746605/ERR1746605.fastq.gz'
+Content type 'unknown' length 55220537 bytes (52.7 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746606/ERR1746606.fastq.gz'
+Content type 'unknown' length 3129624 bytes (3.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746607/ERR1746607.fastq.gz'
+Content type 'unknown' length 19377450 bytes (18.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746608/ERR1746608.fastq.gz'
+Content type 'unknown' length 13955511 bytes (13.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746609/ERR1746609.fastq.gz'
+Content type 'unknown' length 22175130 bytes (21.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746610/ERR1746610.fastq.gz'
+Content type 'unknown' length 16724319 bytes (15.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746611/ERR1746611.fastq.gz'
+Content type 'unknown' length 7327940 bytes (7.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746612/ERR1746612.fastq.gz'
+Content type 'unknown' length 27027332 bytes (25.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746613/ERR1746613.fastq.gz'
+Content type 'unknown' length 22362785 bytes (21.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746614/ERR1746614.fastq.gz'
+Content type 'unknown' length 70749327 bytes (67.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746615/ERR1746615.fastq.gz'
+Content type 'unknown' length 12109637 bytes (11.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746616/ERR1746616.fastq.gz'
+Content type 'unknown' length 13881691 bytes (13.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746617/ERR1746617.fastq.gz'
+Content type 'unknown' length 21210037 bytes (20.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746618/ERR1746618.fastq.gz'
+Content type 'unknown' length 40151950 bytes (38.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746619/ERR1746619.fastq.gz'
+Content type 'unknown' length 27067661 bytes (25.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746620/ERR1746620.fastq.gz'
+Content type 'unknown' length 11334411 bytes (10.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746621/ERR1746621.fastq.gz'
+Content type 'unknown' length 14132179 bytes (13.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746622/ERR1746622.fastq.gz'
+Content type 'unknown' length 6812481 bytes (6.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746623/ERR1746623.fastq.gz'
+Content type 'unknown' length 50153280 bytes (47.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746624/ERR1746624.fastq.gz'
+Content type 'unknown' length 8767195 bytes (8.4 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746625/ERR1746625.fastq.gz'
+Content type 'unknown' length 17054116 bytes (16.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746626/ERR1746626.fastq.gz'
+Content type 'unknown' length 19998431 bytes (19.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746627/ERR1746627.fastq.gz'
+Content type 'unknown' length 15650422 bytes (14.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746628/ERR1746628.fastq.gz'
+Content type 'unknown' length 8383585 bytes (8.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746629/ERR1746629.fastq.gz'
+Content type 'unknown' length 8360327 bytes (8.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746630/ERR1746630.fastq.gz'
+Content type 'unknown' length 25772486 bytes (24.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746631/ERR1746631.fastq.gz'
+Content type 'unknown' length 11129218 bytes (10.6 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746632/ERR1746632.fastq.gz'
+Content type 'unknown' length 4321240 bytes (4.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746633/ERR1746633.fastq.gz'
+Content type 'unknown' length 36765432 bytes (35.1 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746634/ERR1746634.fastq.gz'
+Content type 'unknown' length 25977000 bytes (24.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746635/ERR1746635.fastq.gz'
+Content type 'unknown' length 15204341 bytes (14.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/006/ERR1746636/ERR1746636.fastq.gz'
+Content type 'unknown' length 37920738 bytes (36.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/007/ERR1746637/ERR1746637.fastq.gz'
+Content type 'unknown' length 12767967 bytes (12.2 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/008/ERR1746638/ERR1746638.fastq.gz'
+Content type 'unknown' length 14527069 bytes (13.9 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/009/ERR1746639/ERR1746639.fastq.gz'
+Content type 'unknown' length 13909360 bytes (13.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/000/ERR1746640/ERR1746640.fastq.gz'
+Content type 'unknown' length 18115306 bytes (17.3 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/001/ERR1746641/ERR1746641.fastq.gz'
+Content type 'unknown' length 29896425 bytes (28.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/002/ERR1746642/ERR1746642.fastq.gz'
+Content type 'unknown' length 31291455 bytes (29.8 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/003/ERR1746643/ERR1746643.fastq.gz'
+Content type 'unknown' length 13074594 bytes (12.5 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/004/ERR1746644/ERR1746644.fastq.gz'
+Content type 'unknown' length 14720654 bytes (14.0 MB)
+==================================================
+trying URL 'ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR174/005/ERR1746645/ERR1746645.fastq.gz'
+Content type 'unknown' length 26207897 bytes (25.0 MB)
+=================================================
