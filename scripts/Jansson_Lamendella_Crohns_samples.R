@@ -28,11 +28,12 @@ write.table(meta_raw_merged, file = paste0("raw/", study, "/metadata_raw_merged.
             sep = "\t")
 
 # matched sample accessions
-sample_accession <- sample_table$sample_accession
+sample_accession <- sample_table$sample_accession %>% 
+  sraConvert(sra_con = sra_con) %>% 
+  select(sample, run)
 write.table(sample_accession, 
             file = 'raw/Jansson_Lamendella_Crohns/sample_accession.txt',
             row.names = F,
-            col.names = F,
             quote = FALSE,
             sep = '\t')
 
@@ -41,8 +42,8 @@ dir.create(paste0(data.dir, "fastq/", study, "/"),
            recursive = T)
 # only download those that are not already present
 fastq_files <- list.files(paste0(data.dir, "fastq/", study, "/"))
-samples_to_get <- fastq_files %>% 
+run_to_get <- fastq_files %>% 
   gsub(".fastq.gz", "", ., fixed = T) %>% 
-  setdiff(sample_accesion, .)
-getSRAfile(samples_to_get, sra_con, fileType = 'fastq', 
-           destDir = paste0(data.dir, "fastq/", study, "/"))
+  setdiff(sample_accession$run, .)
+if(length(run_to_get) > 0) getSRAfile(run_to_get, sra_con, fileType = 'fastq', 
+                                      destDir = paste0(data.dir, "fastq/", study, "/"))
