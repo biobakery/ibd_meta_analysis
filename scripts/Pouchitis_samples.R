@@ -9,11 +9,11 @@ meta_raw <- read.table(paste0("raw/", study, "/metadata_raw.txt"),
                        sep = '\t',
                        stringsAsFactors = F,
                        check.names = F)
-meta_raw$sample_alias <- paste0('qiita_sid_1629:', meta_raw$sample_name)
+meta_raw$sample_alias <- paste0('PRJNA269954.', meta_raw$`16S_ID`)
 
 sra_con <- dbConnect(SQLite(), paste0(data.dir, "SRAdb/SRAmetadb.sqlite"))
 # sample accessions for the sequences
-sample_accesion <- sraConvert('ERP020401', sra_con = sra_con)$sample %>% unique
+sample_accession <- sraConvert('SRP056002', sra_con = sra_con)$sample %>% unique
 # table of sample attributes
 sample_table <- dbGetQuery(sra_con, paste0("select * from sample where sample_accession in (",
                                            sample_accesion %>% 
