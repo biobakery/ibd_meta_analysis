@@ -3,8 +3,7 @@ source("scripts/source.R")
 study <- "Pouchitis"
 
 dir.create(paste0("raw/", study, "/"), recursive = T)
-utils::download.file('https://huttenhower.sph.harvard.edu/sites/default/files/Pouchitis2015_Metadata_1.txt',
-                     destfile = 'raw/pouchitis/metadata_raw.txt')
+# metadata downloaded from https://huttenhower.sph.harvard.edu/sites/default/files/Pouchitis2015_Metadata_1.txt
 meta_raw <- read.table(paste0("raw/", study, "/metadata_raw.txt"),
                        header = T,
                        sep = '\t',
