@@ -13,10 +13,10 @@ meta_raw$sample_alias <- paste0('qiita_sid_1629:', meta_raw$sample_name)
 
 sra_con <- dbConnect(SQLite(), paste0(data.dir, "SRAdb/SRAmetadb.sqlite"))
 # sample accessions for the sequences
-sample_accesion <- sraConvert('ERP020401', sra_con = sra_con)$sample %>% unique
+sample_accession <- sraConvert('ERP020401', sra_con = sra_con)$sample %>% unique
 # table of sample attributes
 sample_table <- dbGetQuery(sra_con, paste0("select * from sample where sample_accession in (",
-                                           sample_accesion %>% 
+                                           sample_accession %>% 
                                              paste0("'", ., "'") %>% 
                                              paste(collapse = ', '),
                                            ")"))
