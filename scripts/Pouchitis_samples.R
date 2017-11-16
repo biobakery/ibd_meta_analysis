@@ -1,9 +1,10 @@
 setwd("/n/hutlab11_nobackup/users/syma/ibd_meta_analysis/")
 source("scripts/source.R")
-study <- "Jansson_Lamendella_Crohns"
+study <- "Pouchitis"
 
 dir.create(paste0("raw/", study, "/"), recursive = T)
-# metadata downloaded from https://qiita.ucsd.edu/study/description/1629
+utils::download.file('https://huttenhower.sph.harvard.edu/sites/default/files/Pouchitis2015_Metadata_1.txt',
+                     destfile = 'raw/pouchitis/metadata_raw.txt')
 meta_raw <- read.table(paste0("raw/", study, "/metadata_raw.txt"),
                        header = T,
                        sep = '\t',
