@@ -32,7 +32,7 @@ sample_accession <- sample_table$sample_accession %>%
   sraConvert(sra_con = sra_con) %>% 
   select(sample, run)
 write.table(sample_accession, 
-            file = 'raw/Jansson_Lamendella_Crohns/sample_accession.txt',
+            file =  paste0("raw/", study, "/sample_accession.txt"),
             row.names = F,
             quote = FALSE,
             sep = '\t')
