@@ -1,0 +1,274 @@
+Patient_ID	Classification	Antibiotics	ISCORE	Pouch_PPI	paired_sample	16S_ID
+pouchitis2015.1	AP	no	3	PPI	pouchitis2015.228	N00108
+pouchitis2015.2	NP	yes	0	PPI	pouchitis2015.222	N00197
+pouchitis2015.3	NP	no	0	PPI	pouchitis2015.237	N00366
+pouchitis2015.4	CDL	yes	3	PPI	pouchitis2015.215	N00430
+pouchitis2015.5	NP	yes	1	PPI	pouchitis2015.223	N00221
+pouchitis2015.6	FAP	no	0	PPI		N00499
+pouchitis2015.7	FAP	no	0	PPI	pouchitis2015.210	N00656
+pouchitis2015.8	CDL	no	4	PPI	pouchitis2015.204	N00414
+pouchitis2015.9	CDL	yes	3	PPI	pouchitis2015.207	N00291
+pouchitis2015.10	AP	no	0	PPI	pouchitis2015.234	N00447
+pouchitis2015.11	CDL	no	4	PPI	pouchitis2015.213	N00424
+pouchitis2015.12	FAP	no	0	PPI	pouchitis2015.209	N00471
+pouchitis2015.13	CP	yes	0	PPI	pouchitis2015.218	N00215
+pouchitis2015.14	CP	yes	0	PPI	pouchitis2015.214	N00194
+pouchitis2015.15	NP	no	0	PPI	pouchitis2015.225	N00299
+pouchitis2015.16	CDL	yes	3	PPI	pouchitis2015.211	N00127
+pouchitis2015.17	CP	yes	0	PPI	pouchitis2015.208	N00205
+pouchitis2015.18	NP	no	0	PPI	pouchitis2015.203	N00473
+pouchitis2015.19	CDL	no	6	PPI	pouchitis2015.221	N00485
+pouchitis2015.20	CDL	yes	5	PPI	pouchitis2015.224	N00370
+pouchitis2015.21	NP	no	1	PPI	pouchitis2015.236	N00256
+pouchitis2015.22	FAP	no	0	PPI	pouchitis2015.235	N00328
+pouchitis2015.23	CP	no	2	PPI	pouchitis2015.202	N00044
+pouchitis2015.24	NP	no	0	PPI	pouchitis2015.216	N00417
+pouchitis2015.25	NP	no	1	PPI	pouchitis2015.219	N00285
+pouchitis2015.26	FAP	yes	0	PPI	pouchitis2015.226	N00356
+pouchitis2015.27	CDL	yes	0	PPI	pouchitis2015.227	N00217
+pouchitis2015.28	NP	no	0	PPI	pouchitis2015.217	N00379
+pouchitis2015.29	FAP	yes	0	PPI	pouchitis2015.230	N00153
+pouchitis2015.30	FAP	no	0	PPI	pouchitis2015.233	N00514
+pouchitis2015.31	CP	yes	1	PPI	pouchitis2015.231	N00121
+pouchitis2015.32	FAP	no	1	PPI	pouchitis2015.212	N00487
+pouchitis2015.33	CP	yes	0	PPI	pouchitis2015.201	N00410
+pouchitis2015.34	CDL	yes	0	PPI	pouchitis2015.205	N00116
+pouchitis2015.35	CDL	yes	5	PPI	pouchitis2015.200	N00010
+pouchitis2015.36	NP	yes	0	PPI		N00129
+pouchitis2015.37	AP	no	0	PPI		N00275
+pouchitis2015.38	NP	no	0	PPI		N00479
+pouchitis2015.39	NP	no	0	PPI		N00453
+pouchitis2015.40	NP	no	0	PPI		N00529
+pouchitis2015.41	NP	no	0	PPI		N00422
+pouchitis2015.42	NP	no	1	PPI		N00225
+pouchitis2015.43	CDL	yes	0	PPI		N00267
+pouchitis2015.44	AP	no	0	PPI		N00148
+pouchitis2015.45	NP	no	0	PPI		N00076
+pouchitis2015.46	AP	yes	0	PPI		N00265
+pouchitis2015.47	CP	yes	0	PPI		N00313
+pouchitis2015.48	NP	no	0	PPI		N00483
+pouchitis2015.49	AP	no	0	PPI		N00161
+pouchitis2015.50	AP	no	0	PPI		N00213
+pouchitis2015.51	AP	no	0	PPI		N00048
+pouchitis2015.52	AP	no	3	PPI		N00056
+pouchitis2015.53	AP	no	0	PPI		N00661
+pouchitis2015.54	AP	no	0	PPI		N00188
+pouchitis2015.55	AP	no	1	PPI		N00420
+pouchitis2015.56	AP	no	1	PPI		N00146
+pouchitis2015.57	NP	no	0	PPI		N00408
+pouchitis2015.58	AP	no	1	PPI		N00015
+pouchitis2015.59	NP	no	0	PPI		N00461
+pouchitis2015.60	AP	no	0	PPI		N00080
+pouchitis2015.61	NP	yes	0	PPI		N00157
+pouchitis2015.62	AP	no	3	PPI		N00203
+pouchitis2015.63	NP	no	0	PPI		N00368
+pouchitis2015.64	AP	no	0	PPI		N00381
+pouchitis2015.65	AP	yes	0	PPI		N00525
+pouchitis2015.66	NP	no	0	PPI		N00180
+pouchitis2015.67	AP	no	0	PPI		N00522
+pouchitis2015.68	CP	yes	0	PPI		N00100
+pouchitis2015.69	AP	yes	0	PPI		N00007
+pouchitis2015.70	AP	yes	0	PPI		N00086
+pouchitis2015.71	AP	no	0	PPI		N00017
+pouchitis2015.72	NP	no	0	PPI		N00358
+pouchitis2015.73	CDL	no	2	PPI		N00428
+pouchitis2015.74	NP	no	0	PPI		N00174
+pouchitis2015.75	CP	yes	0	PPI		N00050
+pouchitis2015.76	NP	no	2	PPI		N00072
+pouchitis2015.77	AP	yes	0	PPI		N00477
+pouchitis2015.78	NP	no	0	PPI		N00510
+pouchitis2015.79	AP	no	1	PPI		N00326
+pouchitis2015.80	AP	no	0	PPI		N00136
+pouchitis2015.81	CP	yes	1	PPI		N00172
+pouchitis2015.82	AP	yes	0	PPI		N00244
+pouchitis2015.83	AP	no	0	PPI		N00497
+pouchitis2015.84	AP	no	0	PPI		N00263
+pouchitis2015.85	CP	yes	0	PPI		N00650
+pouchitis2015.86	AP	yes	0	PPI		N00236
+pouchitis2015.87	CP	no	0	PPI		N00652
+pouchitis2015.88	NP	no	0	PPI		N00123
+pouchitis2015.89	NP	no	0	PPI		N00269
+pouchitis2015.90	FAP	no	0	PPI		N00319
+pouchitis2015.91	CDL	no	0	PPI		N00469
+pouchitis2015.92	CP	no	0	PPI		N00284
+pouchitis2015.93	AP	no	0	PPI		N00182
+pouchitis2015.94	CP	yes	0	PPI		N00671
+pouchitis2015.95	NP	no	0	PPI		N00166
+pouchitis2015.96	AP	no	0	PPI		N00159
+pouchitis2015.97	AP	no	1	PPI		N00209
+pouchitis2015.98	AP	yes	1	PPI		N00399
+pouchitis2015.99	AP	no	0	PPI		N00412
+pouchitis2015.100	AP	yes	2	PPI		N00219
+pouchitis2015.101	AP	yes	0	PPI		N00019
+pouchitis2015.102	CDL	yes	0	PPI		N00658
+pouchitis2015.103	NP	no	0	PPI		N00364
+pouchitis2015.104	FAP	no	0	PPI		N00669
+pouchitis2015.105	CP	yes	0	PPI		N00084
+pouchitis2015.106	NP	yes	0	PPI		N00234
+pouchitis2015.107	NP	no	1	PPI		N00138
+pouchitis2015.108	NP	yes	0	PPI		N00064
+pouchitis2015.109	CP	yes	1	PPI		N00360
+pouchitis2015.110	AP	no	1	PPI		N00058
+pouchitis2015.111	AP	no	0	PPI		N00436
+pouchitis2015.112	AP	no	0	PPI		N00134
+pouchitis2015.113	CP	yes	0	PPI		N00246
+pouchitis2015.114	NP	no	0	PPI		N00507
+pouchitis2015.115	CDL	yes	5	PPI		N00054
+pouchitis2015.116	CP	no	0	PPI		N00078
+pouchitis2015.117	CP	yes	0	PPI		N00009
+pouchitis2015.118	AP	no	0	PPI		N00432
+pouchitis2015.119	AP	no	0	PPI		N00665
+pouchitis2015.120	CP	yes	0	PPI		N00383
+pouchitis2015.121	AP	no	0	PPI		N00102
+pouchitis2015.122	AP	yes	1	PPI		N00395
+pouchitis2015.123	AP	yes	0	PPI		N00237
+pouchitis2015.124	AP	no	0	PPI		N00112
+pouchitis2015.125	CP	yes	0	PPI		N00104
+pouchitis2015.126	FAP	no	0	PPI		N00501
+pouchitis2015.127	CP	no	0	PPI		N00520
+pouchitis2015.128	AP	no	0	PPI		N00513
+pouchitis2015.129	CDL	no	2	PPI	pouchitis2015.262	N00066
+pouchitis2015.130	CDL	no	2	PPI	pouchitis2015.242	N00184
+pouchitis2015.131	NP	no	0	PPI	pouchitis2015.273	N00033
+pouchitis2015.132	NP	no	1	PPI		N00031
+pouchitis2015.133	CDL	no	0	PPI	pouchitis2015.247	N00192
+pouchitis2015.134	FAP	no	0	PPI	pouchitis2015.267	N00021
+pouchitis2015.135	FAP	no	0	PPI	pouchitis2015.264	N00254
+pouchitis2015.136	CDL	no	0	PPI	pouchitis2015.244	N00042
+pouchitis2015.137	FAP	no	0	PPI		N00272
+pouchitis2015.138	FAP	no	1	PPI	pouchitis2015.251	N00230
+pouchitis2015.139	AP	no	0	PPI	pouchitis2015.249	N00005
+pouchitis2015.140	FAP	no	0	PPI	pouchitis2015.270	N00092
+pouchitis2015.141	CDL	no	8	PPI	pouchitis2015.254	N00403
+pouchitis2015.142	AP	no	0	PPI		N00164
+pouchitis2015.143	CDL	no	0	PPI		N00496
+pouchitis2015.144	AP	no	1	PPI		N00186
+pouchitis2015.145	AP	no	0	PPI		N00667
+pouchitis2015.146	CP	yes	0	PPI		N00460
+pouchitis2015.147	NP	no	0	PPI		N00481
+pouchitis2015.148	AP	no	0	PPI		N00207
+pouchitis2015.149	NP	no	1	PPI		N00362
+pouchitis2015.150	AP	no	0	PPI		N00002
+pouchitis2015.151	AP	no	0	PPI		N00673
+pouchitis2015.152	AP	no	1	PPI		N00505
+pouchitis2015.153	AP	no	0	PPI		N00401
+pouchitis2015.154	NP	no	0	PPI		N00442
+pouchitis2015.155	CP	yes	0	PPI		N00248
+pouchitis2015.156	NP	no	0	PPI		N00223
+pouchitis2015.157	AP	no	0	PPI		N00449
+pouchitis2015.158	NP	no	0	PPI		N00387
+pouchitis2015.159	AP	no	0	PPI	pouchitis2015.252	N00242
+pouchitis2015.160	CDL	no	0	PPI	pouchitis2015.246	N00202
+pouchitis2015.161	FAP	no	0	PPI	pouchitis2015.268	N00119
+pouchitis2015.162	NP	no	1	PPI	pouchitis2015.258	N00046
+pouchitis2015.163	NP	no	0	PPI	pouchitis2015.263	N00106
+pouchitis2015.164	NP	no	0	PPI		N00457
+pouchitis2015.165	CP	yes	0	PPI		N00518
+pouchitis2015.166	AP	no	0	PPI		N00440
+pouchitis2015.167	AP	no	0	PPI		N00040
+pouchitis2015.168	NP	no	0	PPI		N00287
+pouchitis2015.169	CDL	no	0	PPI		N00279
+pouchitis2015.170	AP	yes	0	PPI		N00385
+pouchitis2015.171	CP	yes	0	PPI		N00489
+pouchitis2015.172	NP	no	0	PPI		N00211
+pouchitis2015.173	NP	no	0	PPI		N00391
+pouchitis2015.174	AP	no	0	PPI		N00150
+pouchitis2015.175	AP	no	0	PPI		N00029
+pouchitis2015.176	NP	no	0	PPI		N00294
+pouchitis2015.177	AP	no	0	PPI		N00297
+pouchitis2015.178	NP	no	0	PPI		N00190
+pouchitis2015.179	NP	no	0	PPI		N00654
+pouchitis2015.180	NP	no	0	PPI		N00062
+pouchitis2015.181	NP	no	0	PPI	pouchitis2015.265	N00003
+pouchitis2015.182	CDL	no	0	PPI	pouchitis2015.271	N00372
+pouchitis2015.183	NP	no	0	PPI	pouchitis2015.243	N00060
+pouchitis2015.184	AP	no	0	PPI	pouchitis2015.253	N00176
+pouchitis2015.185	NP	no	0	PPI		N00082
+pouchitis2015.186	CDL	no	8	PPI	pouchitis2015.260	N00027
+pouchitis2015.187	CDL	no	1	PPI	pouchitis2015.259	N00277
+pouchitis2015.188	FAP	no	0	PPI	pouchitis2015.266	N00240
+pouchitis2015.189	AP	no	0	PPI	pouchitis2015.255	N00170
+pouchitis2015.190	FAP	no	1	Pouch	pouchitis2015.238	N00089
+pouchitis2015.191	CDL	no	9	PPI	pouchitis2015.245	N00070
+pouchitis2015.192	CDL	no	1	PPI		N00125
+pouchitis2015.193	FAP	no	0	PPI	pouchitis2015.250	N00228
+pouchitis2015.194	FAP	no	0	PPI	pouchitis2015.257	N00143
+pouchitis2015.195	AP	no	0	PPI	pouchitis2015.248	N00178
+pouchitis2015.196	AP	no	0	PPI	pouchitis2015.261	N00114
+pouchitis2015.197	AP	no	0	PPI	pouchitis2015.239	N00140
+pouchitis2015.198	FAP	no	0	PPI	pouchitis2015.241	N00090
+pouchitis2015.199	AP	no	0	PPI	pouchitis2015.256	N00199
+pouchitis2015.200	CDL	yes	7	Pouch	pouchitis2015.35	N00011
+pouchitis2015.201	CP	yes	2	Pouch	pouchitis2015.33	N00411
+pouchitis2015.202	CP	no	7	Pouch	pouchitis2015.23	N00045
+pouchitis2015.203	NP	no	0	Pouch	pouchitis2015.18	N00474
+pouchitis2015.204	CDL	no	5	Pouch	pouchitis2015.8	N00415
+pouchitis2015.205	CDL	yes	5	Pouch	pouchitis2015.34	N00117
+pouchitis2015.206	CDL	yes	2	Pouch		N00133
+pouchitis2015.207	CDL	yes	10	Pouch	pouchitis2015.9	N00292
+pouchitis2015.208	CP	yes	6	Pouch	pouchitis2015.17	N00206
+pouchitis2015.209	FAP	no	1	Pouch	pouchitis2015.12	N00472
+pouchitis2015.210	FAP	no	1	Pouch	pouchitis2015.7	N00657
+pouchitis2015.211	CDL	yes	6	Pouch	pouchitis2015.16	N00128
+pouchitis2015.212	FAP	no	0	Pouch	pouchitis2015.32	N00488
+pouchitis2015.213	CDL	no	3	Pouch	pouchitis2015.11	N00425
+pouchitis2015.214	CP	yes	0	Pouch	pouchitis2015.14	N00195
+pouchitis2015.215	CDL	yes	2	Pouch	pouchitis2015.4	N00431
+pouchitis2015.216	NP	no	2	Pouch	pouchitis2015.24	N00418
+pouchitis2015.217	NP	no	1	Pouch	pouchitis2015.28	N00380
+pouchitis2015.218	CP	yes	0	Pouch	pouchitis2015.13	N00216
+pouchitis2015.219	NP	no	1	Pouch	pouchitis2015.25	N00286
+pouchitis2015.220	CDL	yes	10	Pouch		N00398
+pouchitis2015.221	CDL	no	4	Pouch	pouchitis2015.19	N00486
+pouchitis2015.222	NP	yes	3	Pouch	pouchitis2015.2	N00198
+pouchitis2015.223	NP	yes	1	Pouch	pouchitis2015.5	N00222
+pouchitis2015.224	CDL	yes	9	Pouch	pouchitis2015.20	N00371
+pouchitis2015.225	NP	no	3	Pouch	pouchitis2015.15	N00300
+pouchitis2015.226	FAP	yes	0	Pouch	pouchitis2015.26	N00357
+pouchitis2015.227	CDL	yes	8	Pouch	pouchitis2015.27	N00218
+pouchitis2015.228	AP	no	9	Pouch		N00109
+pouchitis2015.229	FAP	no	0	Pouch	pouchitis2015.1	N00446
+pouchitis2015.230	FAP	yes	0	Pouch	pouchitis2015.29	N00154
+pouchitis2015.231	CP	yes	7	Pouch	pouchitis2015.31	N00122
+pouchitis2015.232	CP	yes	2	Pouch		N00378
+pouchitis2015.233	FAP	no	1	Pouch	pouchitis2015.30	N00515
+pouchitis2015.234	AP	no	4	Pouch	pouchitis2015.10	N00448
+pouchitis2015.235	FAP	no	0	Pouch	pouchitis2015.22	N00329
+pouchitis2015.236	NP	no	1	Pouch	pouchitis2015.21	N00257
+pouchitis2015.237	NP	no	1	Pouch	pouchitis2015.3	N00367
+pouchitis2015.238	FAP	no	0	PPI	pouchitis2015.190	N00088
+pouchitis2015.239	AP	no	6	Pouch	pouchitis2015.197	N00141
+pouchitis2015.240	AP	no	8	Pouch		N00024
+pouchitis2015.241	FAP	no	1	Pouch	pouchitis2015.198	N00091
+pouchitis2015.242	CDL	no	1	Pouch	pouchitis2015.130	N00185
+pouchitis2015.243	NP	no	1	Pouch	pouchitis2015.183	N00061
+pouchitis2015.244	CDL	no	0	Pouch	pouchitis2015.136	N00043
+pouchitis2015.245	CDL	no	11	Pouch	pouchitis2015.191	N00071
+pouchitis2015.246	CDL	no	0	Pouch	pouchitis2015.160	N00201
+pouchitis2015.247	CDL	no	5	Pouch	pouchitis2015.133	N00193
+pouchitis2015.248	AP	no	6	Pouch	pouchitis2015.195	N00179
+pouchitis2015.249	AP	no	5	Pouch	pouchitis2015.139	N00006
+pouchitis2015.250	FAP	no	3	Pouch	pouchitis2015.193	N00229
+pouchitis2015.251	FAP	no	3	Pouch	pouchitis2015.138	N00231
+pouchitis2015.252	AP	no	6	Pouch	pouchitis2015.159	N00243
+pouchitis2015.253	AP	no	6	Pouch	pouchitis2015.184	N00177
+pouchitis2015.254	CDL	no	8	Pouch	pouchitis2015.141	N00404
+pouchitis2015.255	AP	no	9	Pouch	pouchitis2015.189	N00171
+pouchitis2015.256	AP	no	5	Pouch	pouchitis2015.199	N00200
+pouchitis2015.257	FAP	no	0	Pouch	pouchitis2015.194	N00144
+pouchitis2015.258	NP	no	0	Pouch	pouchitis2015.162	N00047
+pouchitis2015.259	CDL	no	11	Pouch	pouchitis2015.187	N00278
+pouchitis2015.260	CDL	no	6	Pouch	pouchitis2015.186	N00028
+pouchitis2015.261	AP	no	8	Pouch	pouchitis2015.196	N00115
+pouchitis2015.262	CDL	no	6	Pouch	pouchitis2015.129	N00067
+pouchitis2015.263	NP	no	1	Pouch	pouchitis2015.163	N00107
+pouchitis2015.264	FAP	no	0	Pouch	pouchitis2015.135	N00255
+pouchitis2015.265	NP	no	2	Pouch	pouchitis2015.181	N00004
+pouchitis2015.266	FAP	no	0	Pouch	pouchitis2015.188	N00241
+pouchitis2015.267	FAP	no	0	Pouch	pouchitis2015.134	N00022
+pouchitis2015.268	FAP	no	0	Pouch	pouchitis2015.161	N00120
+pouchitis2015.269	NP	no	1	Pouch		N00053
+pouchitis2015.270	FAP	no	0	Pouch	pouchitis2015.140	N00093
+pouchitis2015.271	CDL	no	3	Pouch	pouchitis2015.182	N00373
+pouchitis2015.272	NP	no	0	Pouch		N00032
+pouchitis2015.273	NP	no	0	Pouch	pouchitis2015.131	N00034
