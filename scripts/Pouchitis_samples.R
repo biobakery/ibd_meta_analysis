@@ -16,7 +16,7 @@ sra_con <- dbConnect(SQLite(), paste0(data.dir, "SRAdb/SRAmetadb.sqlite"))
 sample_accession <- sraConvert('SRP056002', sra_con = sra_con)$sample %>% unique
 # table of sample attributes
 sample_table <- dbGetQuery(sra_con, paste0("select * from sample where sample_accession in (",
-                                           sample_accesion %>% 
+                                           sample_accession %>% 
                                              paste0("'", ., "'") %>% 
                                              paste(collapse = ', '),
                                            ")"))
@@ -46,6 +46,7 @@ dir.create(paste0(data.dir, "fastq/", study, "/"),
 fastq_files <- list.files(paste0(data.dir, "fastq/", study, "/"))
 run_to_get <- fastq_files %>% 
   gsub(".fastq.gz", "", ., fixed = T) %>% 
+  gsub("_1", "", ., fixed = T) %>% gsub("_2", "", ., fixed = T) %>% #for paired-ends
   setdiff(sample_accession$run, .)
 if(length(run_to_get) > 0) getSRAfile(run_to_get, sra_con, fileType = 'fastq', 
                                       destDir = paste0(data.dir, "fastq/", study, "/"))
