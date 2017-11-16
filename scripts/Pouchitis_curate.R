@@ -16,7 +16,7 @@ meta_curated <- meta_raw_merged %>%
          sample_accession = sample_accession,
          sampleID = paste0(study_accession, ":", sample_accession),
          subjectID = paste0(study_accession, ":", Patient_ID),
-         body_site = body_site %>% 
+         body_site = Pouch_PPI %>% 
            recode("Pouch" = "pouch",
                   "PPI" = "PPI"),
          sample_type = "biopsy",
