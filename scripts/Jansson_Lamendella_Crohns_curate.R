@@ -1,13 +1,12 @@
 setwd("/n/hutlab11_nobackup/users/syma/ibd_meta_analysis/")
 source("scripts/source.R")
-library(tidyverse)
 study <- "Jansson_Lamendella_Crohns"
 
-meta_raw <- read.table(paste0("raw/", study, "/metadata_raw.txt"),
-                       header = T,
-                       sep = '\t',
-                       stringsAsFactors = F,
-                       check.names = F)
+meta_raw_merged <- read.table(paste0("raw/", study, "/metadata_raw_merged.txt"),
+                              header = T,
+                              sep = '\t',
+                              stringsAsFactors = F,
+                              check.names = F)
 meta_raw$sample_alias <- paste0('qiita_sid_1629:', meta_raw$sample_name)
 
 sra_con <- dbConnect(SQLite(), paste0(data.dir, "SRAdb/SRAmetadb.sqlite"))

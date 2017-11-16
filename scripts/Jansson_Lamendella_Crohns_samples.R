@@ -42,7 +42,7 @@ dir.create(paste0(data.dir, "fastq/", study, "/"),
 # only download those that are not already present
 fastq_files <- list.files(paste0(data.dir, "fastq/", study, "/"))
 samples_to_get <- fastq_files %>% 
-  gsub(".tar.gz", "", ., fixed = T) %>% 
+  gsub(".fastq.gz", "", ., fixed = T) %>% 
   setdiff(sample_accesion, .)
 getSRAfile(samples_to_get, sra_con, fileType = 'fastq', 
            destDir = paste0(data.dir, "fastq/", study, "/"))
