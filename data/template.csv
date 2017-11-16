@@ -1,0 +1,34 @@
+col.name,var.class,uniqueness,requiredness,allowedvalues,description
+dataset_name,character,non-unique,required,*,Name of study
+study_accession,character,non-unique,required,*,Study accession on platform where obtained
+PMID,character,non-unique,optional,*,
+sample_accession,character,unique,required,*,Sample accession on platform where obtained
+sampleID,character,unique,required,*,Unique sample identifier often study_accession and sample_accession together
+subjectID,character,non-unique,optional,*,Subject identifier
+body_site,character,non-unique,optional,TI|rectum|stool,
+sample_type,character,non-unique,optional,biopsy|stool,
+disease,character,non-unique,optional,CD|UC|control,
+control,character,non-unique,optional,*,Additional control classes
+IBD_subtype,character,non-unique,optional,iCD|cCD|UC,IBD subtype
+IBD_subtype_additional,character,non-unique,optional,*,Additional information in IBD subtype
+L.cat,character,non-unique,optional,*,Disease extent variable for CD
+E.cat,character,non-unique,optional,E1|E2|E3,Disease extent variable for UC
+B.cat,character,non-unique,optional,B1|B2|B3,Montreal categorization of CD
+perianal,character,non-unique,optional,y|n,Perianal disease?f
+age,character,non-unique,optional,y|n,Age (in yrs)
+gender,numeric,non-unique,optional,*,
+BMI,character,non-unique,optional,*,
+alcohol,character,non-unique,optional,y|n,
+smoke,character,non-unique,optional,y|n,
+country,character,non-unique,optional,m|f,
+calprotectin,numeric,non-unique,optional,*,Fecal calprotectin
+antibiotics_usage,numeric,non-unique,optional,*,
+antibiotics_family,character,non-unique,optional,,
+time_point,numeric,non-unique,optional,*,
+family,character,non-unique,optional,*,
+DNA_extraction_kit,character,non-unique,optional,Gnome|Illuminakit|MoBio|NorgenBiotek|Qiagen,
+sequencing_platform,character,non-unique,optional,*,
+number_reads,integer,non-unique,optional,*,
+number_bases,integer,non-unique,optional,*,
+minimum_read_length,integer,non-unique,optional,*,
+median_read_length,integer,non-unique,optional,*,
