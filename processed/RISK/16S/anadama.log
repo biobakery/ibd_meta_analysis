@@ -1,0 +1,289 @@
+2018-01-18 09:06:43,281	LoggerReporter	started	INFO: Beginning AnADAMA run with 28 tasks.
+2018-01-18 09:06:43,281	LoggerReporter	started	INFO: Workflow configuration options
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: percent_identity = 0.97
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: min_pred_qc_score = 2
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: maxee = 1
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: grid_benchmark = on
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: grid_partition = serial_requeue,general,240
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: pair_identifier = _R1_001
+2018-01-18 09:06:43,282	LoggerReporter	started	INFO: log_level = INFO
+2018-01-18 09:06:43,283	LoggerReporter	started	INFO: input_extension = fastq.gz
+2018-01-18 09:06:43,283	LoggerReporter	started	INFO: dry_run = False
+2018-01-18 09:06:43,283	LoggerReporter	started	INFO: exclude_target = None
+2018-01-18 09:06:43,283	LoggerReporter	started	INFO: until_task = None
+2018-01-18 09:06:43,283	LoggerReporter	started	INFO: input = 16S/
+2018-01-18 09:06:43,283	LoggerReporter	started	INFO: grid_jobs = 0
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: jobs = 1
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: index_identifier = _I1_001
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: trunc_len_max = 200
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: min_size = 2
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: threads = 1
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: grid = slurm
+2018-01-18 09:06:43,284	LoggerReporter	started	INFO: target = None
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: grid_environment = None
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: barcode_file = 
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: exclude_task = None
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: quit_early = False
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: grid_options = None
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: output = processed/
+2018-01-18 09:06:43,285	LoggerReporter	started	INFO: skip_nothing = False
+2018-01-18 09:06:53,832	LoggerReporter	log_event	INFO: task 0, merge_and_rename_fastq.py : ready and waiting for resources 
+2018-01-18 09:06:53,833	LoggerReporter	log_event	INFO: task 0, merge_and_rename_fastq.py : starting to run 
+2018-01-18 09:06:53,834	LoggerReporter	task_command	INFO: Executing with shell:  merge_and_rename_fastq.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/16S/G22445_stitched.fastq.gz '' '' /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/merged_renamed/G22445_stitched.fastq_renamed.fastq
+2018-01-18 09:06:56,739	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:06:56,740	LoggerReporter	log_event	INFO: task 0, merge_and_rename_fastq.py : completed successfully 
+2018-01-18 09:06:56,740	LoggerReporter	log_event	INFO: task 2, merge_fastq.py : ready and waiting for resources 
+2018-01-18 09:06:56,740	LoggerReporter	log_event	INFO: task 2, merge_fastq.py : starting to run 
+2018-01-18 09:06:56,740	LoggerReporter	task_command	INFO: Executing with shell:  merge_fastq.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/merged_renamed _renamed.fastq /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated.fastq
+2018-01-18 09:06:57,235	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:06:57,236	LoggerReporter	log_event	INFO: task 2, merge_fastq.py : completed successfully 
+2018-01-18 09:06:57,236	LoggerReporter	log_event	INFO: task 3, usearch_fastq_eestats2 : ready and waiting for resources 
+2018-01-18 09:06:57,236	LoggerReporter	log_event	INFO: task 3, usearch_fastq_eestats2 : starting to run 
+2018-01-18 09:06:57,670	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:06:57,671	LoggerReporter	task_command	INFO: Executing with shell:  export OMP_NUM_THREADS=1; usearch -fastq_eestats2 /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated.fastq -output /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_eestats2.txt -threads 1
+2018-01-18 09:06:58,859	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Pass 100:00 38Mb    100.0% Reading reads
+
+2018-01-18 09:06:58,860	LoggerReporter	log_event	INFO: task 3, usearch_fastq_eestats2 : completed successfully 
+2018-01-18 09:06:58,861	LoggerReporter	log_event	INFO: task 5, usearch_fastq_filter : ready and waiting for resources 
+2018-01-18 09:06:58,861	LoggerReporter	log_event	INFO: task 5, usearch_fastq_filter : starting to run 
+2018-01-18 09:06:59,314	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:06:59,315	LoggerReporter	task_command	INFO: Executing with shell:  export OMP_NUM_THREADS=1; usearch -fastq_filter /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated.fastq -fastq_maxee 1 -fastaout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered.fasta -threads 1 -fastaout_discarded /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_discarded.fasta
+2018-01-18 09:07:00,820	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Filtering00:01 38Mb     20.0% Filtering, 75.2% passed00:01 4.1Mb   100.0% Filtering, 82.1% passed
+     91848  Reads (91.8k)                   
+     16453  Discarded reads with expected errs > 1.00
+     75395  Filtered reads (75.4k, 82.1%)
+
+2018-01-18 09:07:00,820	LoggerReporter	log_event	INFO: task 5, usearch_fastq_filter : completed successfully 
+2018-01-18 09:07:00,821	LoggerReporter	log_event	INFO: task 6, cat : ready and waiting for resources 
+2018-01-18 09:07:00,821	LoggerReporter	log_event	INFO: task 6, cat : starting to run 
+2018-01-18 09:07:00,821	LoggerReporter	task_command	INFO: Executing with shell:  cat /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered.fasta /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_discarded.fasta > /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated.fasta
+2018-01-18 09:07:00,864	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:07:00,865	LoggerReporter	log_event	INFO: task 6, cat : completed successfully 
+2018-01-18 09:07:00,865	LoggerReporter	log_event	INFO: task 8, usearch_fastx_truncate : ready and waiting for resources 
+2018-01-18 09:07:00,865	LoggerReporter	log_event	INFO: task 8, usearch_fastx_truncate : starting to run 
+2018-01-18 09:07:00,866	LoggerReporter	task_command	INFO: Executing with shell:  usearch -fastx_truncate /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated.fasta -trunclen 200 -fastaout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_truncated.fasta
+2018-01-18 09:07:01,845	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Processing00:00 37Mb    100.0% Processing, 546 (0.6%) too short
+
+2018-01-18 09:07:01,847	LoggerReporter	log_event	INFO: task 8, usearch_fastx_truncate : completed successfully 
+2018-01-18 09:07:01,847	LoggerReporter	log_event	INFO: task 7, usearch_fastx_truncate : ready and waiting for resources 
+2018-01-18 09:07:01,848	LoggerReporter	log_event	INFO: task 7, usearch_fastx_truncate : starting to run 
+2018-01-18 09:07:01,848	LoggerReporter	task_command	INFO: Executing with shell:  usearch -fastx_truncate /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered.fasta -trunclen 200 -fastaout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered_truncated.fasta
+2018-01-18 09:07:02,825	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Processing00:00 37Mb    100.0% Processing, 525 (0.7%) too short
+
+2018-01-18 09:07:02,826	LoggerReporter	log_event	INFO: task 7, usearch_fastx_truncate : completed successfully 
+2018-01-18 09:07:02,827	LoggerReporter	log_event	INFO: task 9, usearch_derep_fulllength : ready and waiting for resources 
+2018-01-18 09:07:02,827	LoggerReporter	log_event	INFO: task 9, usearch_derep_fulllength : starting to run 
+2018-01-18 09:07:03,261	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:07:03,262	LoggerReporter	task_command	INFO: Executing with shell:  export OMP_NUM_THREADS=1; usearch -derep_fulllength /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered_truncated.fasta -fastaout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_dereplicated.fasta -sizeout -threads 1
+2018-01-18 09:07:04,339	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered_truncated.fasta00:01 56Mb     76.0% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered_truncated.fasta00:01 60Mb    100.0% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_filtered_truncated.fasta
+00:01 31Mb      0.0% DF                                                                                                                                                 00:01 31Mb    100.0% DF
+00:01 31Mb   74870 seqs, 17526 uniques, 13529 singletons (77.2%)
+00:01 31Mb   Min size 1, median 1, max 5600, avg 4.27
+00:01 30Mb      0.0% Writing /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_dereplicated.fasta00:01 30Mb    100.0% Writing /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_dereplicated.fasta
+
+2018-01-18 09:07:04,340	LoggerReporter	log_event	INFO: task 9, usearch_derep_fulllength : completed successfully 
+2018-01-18 09:07:04,341	LoggerReporter	log_event	INFO: task 10, usearch_sortbysize : ready and waiting for resources 
+2018-01-18 09:07:04,341	LoggerReporter	log_event	INFO: task 10, usearch_sortbysize : starting to run 
+2018-01-18 09:07:04,771	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:07:04,772	LoggerReporter	task_command	INFO: Executing with shell:  usearch -sortbysize /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_dereplicated.fasta -fastaout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_sorted.fasta -minsize 2
+2018-01-18 09:07:05,331	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_dereplicated.fasta00:00 47Mb    100.0% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_dereplicated.fasta
+00:00 13Mb   Getting sizes                                                                                                                           
+00:00 14Mb   Sorting 3997 sequences
+00:00 14Mb      0.0% Writing output00:00 14Mb    100.0% Writing output
+
+2018-01-18 09:07:05,333	LoggerReporter	log_event	INFO: task 10, usearch_sortbysize : completed successfully 
+2018-01-18 09:07:05,333	LoggerReporter	log_event	INFO: task 11, usearch_cluster_otus : ready and waiting for resources 
+2018-01-18 09:07:05,334	LoggerReporter	log_event	INFO: task 11, usearch_cluster_otus : starting to run 
+2018-01-18 09:07:05,784	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:07:05,785	LoggerReporter	task_command	INFO: Executing with shell:  usearch -cluster_otus /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_sorted.fasta -otus /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta -relabel 'OTU' -uparseout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_uparse_otus.txt
+2018-01-18 09:07:07,125	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 39Mb      0.1% 0 OTUs, 0 chimeras00:01 54Mb     55.6% 144 OTUs, 18 chimeras00:01 54Mb    100.0% 174 OTUs, 38 chimeras
+
+2018-01-18 09:07:07,126	LoggerReporter	log_event	INFO: task 11, usearch_cluster_otus : completed successfully 
+2018-01-18 09:07:07,127	LoggerReporter	log_event	INFO: task 12, clustalo_nonchimera : ready and waiting for resources 
+2018-01-18 09:07:07,127	LoggerReporter	log_event	INFO: task 12, clustalo_nonchimera : starting to run 
+2018-01-18 09:07:07,143	LoggerReporter	task_command	INFO: Tracked executable version:  clustalo 1.2.4
+
+2018-01-18 09:07:07,143	LoggerReporter	task_command	INFO: Executing with shell:  remove_if_exists.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_clustalo_aligned_nonchimera.fasta ; clustalo -i /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta -o /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_clustalo_aligned_nonchimera.fasta --threads 1
+2018-01-18 09:07:10,999	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:07:11,000	LoggerReporter	log_event	INFO: task 12, clustalo_nonchimera : completed successfully 
+2018-01-18 09:07:11,000	LoggerReporter	log_event	INFO: task 14, usearch_global : ready and waiting for resources 
+2018-01-18 09:07:11,001	LoggerReporter	log_event	INFO: task 14, usearch_global : starting to run 
+2018-01-18 09:07:11,436	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:07:11,436	LoggerReporter	task_command	INFO: Executing with shell:  export OMP_NUM_THREADS=1; usearch -usearch_global /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated_truncated.fasta -db /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta -strand 'both' -id 0.97 -uc /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otu_mapping_results.uc -otutabout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otu_mapping_results.tsv -threads 1
+2018-01-18 09:07:56,135	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 37Mb      0.1% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta00:00 42Mb    100.0% Reading /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta
+00:00 8.9Mb     0.1% Masking (fastnucleo)                                                                                                                00:00 8.9Mb   100.0% Masking (fastnucleo)
+00:00 10.0Mb    0.1% Word stats          00:00 10Mb    100.0% Word stats
+00:00 10Mb    100.0% Alloc rows
+00:00 10Mb      0.1% Build index00:00 10Mb    100.0% Build index
+00:00 43Mb      0.1% Searching all_samples_concatenated_truncated.fasta, 0.0% matched00:01 45Mb      0.2% Searching all_samples_concatenated_truncated.fasta, 100.0% matched00:02 45Mb      1.4% Searching all_samples_concatenated_truncated.fasta, 99.2% matched 00:03 45Mb      2.6% Searching all_samples_concatenated_truncated.fasta, 98.9% matched00:04 45Mb      4.2% Searching all_samples_concatenated_truncated.fasta, 98.8% matched00:05 45Mb      5.4% Searching all_samples_concatenated_truncated.fasta, 98.8% matched00:06 45Mb      8.0% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:07 45Mb     10.3% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:08 45Mb     11.5% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:09 45Mb     14.1% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:10 45Mb     16.8% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:11 45Mb     19.5% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:12 45Mb     20.9% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:13 45Mb     22.2% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:14 45Mb     25.0% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:15 45Mb     27.8% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:16 45Mb     30.5% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:17 45Mb     33.3% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:18 45Mb     35.8% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:19 45Mb     38.6% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:20 45Mb     41.2% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:21 45Mb     43.8% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:22 45Mb     46.5% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:23 45Mb     49.3% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:24 45Mb     51.7% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:25 45Mb     54.5% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:26 45Mb     57.1% Searching all_samples_concatenated_truncated.fasta, 98.8% matched00:27 45Mb     59.8% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:28 45Mb     62.6% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:29 45Mb     65.2% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:30 45Mb     67.4% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:31 45Mb     68.5% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:32 45Mb     70.8% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:33 45Mb     73.5% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:34 45Mb     76.3% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:35 45Mb     79.1% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:36 45Mb     81.1% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:37 45Mb     83.0% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:38 45Mb     84.4% Searching all_samples_concatenated_truncated.fasta, 98.7% matched00:39 45Mb     87.2% Searching all_samples_concatenated_truncated.fasta, 98.6% matched00:40 45Mb     89.9% Searching all_samples_concatenated_truncated.fasta, 98.5% matched00:41 45Mb     92.6% Searching all_samples_concatenated_truncated.fasta, 98.4% matched00:42 45Mb     94.9% Searching all_samples_concatenated_truncated.fasta, 98.3% matched00:43 45Mb     96.4% Searching all_samples_concatenated_truncated.fasta, 98.3% matched00:44 45Mb     97.9% Searching all_samples_concatenated_truncated.fasta, 98.2% matched00:45 45Mb     99.8% Searching all_samples_concatenated_truncated.fasta, 98.2% matched00:45 45Mb    100.0% Searching all_samples_concatenated_truncated.fasta, 98.2% matched
+89623 / 91302 mapped to OTUs (98.2%)                                                  
+00:45 45Mb   Writing /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otu_mapping_results.tsv
+00:45 45Mb   Writing /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otu_mapping_results.tsv ...done.
+
+2018-01-18 09:07:56,136	LoggerReporter	log_event	INFO: task 14, usearch_global : completed successfully 
+2018-01-18 09:07:56,137	LoggerReporter	log_event	INFO: task 15, usearch_global : ready and waiting for resources 
+2018-01-18 09:07:56,137	LoggerReporter	log_event	INFO: task 15, usearch_global : starting to run 
+2018-01-18 09:07:56,605	LoggerReporter	task_command	INFO: Tracked executable version:  usearch v9.0.2132_i86linux64
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+2018-01-18 09:07:56,605	LoggerReporter	task_command	INFO: Executing with shell:  export OMP_NUM_THREADS=1; usearch -usearch_global /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta -db /n/hutlab11/users/ljmciver/bake/databases/usearch8/gg_13_8_97-otus.udb -strand 'both' -id 0.97 -uc /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_green_genes_mapping_results.uc -otutabout /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_green_genes_mapping_results.tsv -threads 1 -top_hit_only
+2018-01-18 09:07:59,402	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: usearch v9.0.2132_i86linux64, 132Gb RAM, 40 cores
+(C) Copyright 2013-15 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: gabuali@hsph.harvard.edu, non-profit use, max 1 process(es)
+
+License for USEARCH64 available.
+License for USEARCH64 obtained.
+
+Stderr: 00:00 4.5Mb     0.0% Rows00:01 493Mb    90.5% Rows00:01 533Mb   100.0% Rows
+00:01 534Mb  Reading pointers...done.
+00:01 536Mb  Reading db seqs...done.
+00:01 712Mb     0.1% Searching all_samples_otus_nonchimeras.fasta, 0.0% matched00:02 716Mb    71.2% Searching all_samples_otus_nonchimeras.fasta, 96.7% matched00:02 716Mb   100.0% Searching all_samples_otus_nonchimeras.fasta, 94.8% matched
+165 / 174 mapped to OTUs (94.8%)                                                
+00:02 716Mb  Writing /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_green_genes_mapping_results.tsv
+00:02 716Mb  Writing /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_green_genes_mapping_results.tsv ...done.
+
+2018-01-18 09:07:59,402	LoggerReporter	log_event	INFO: task 15, usearch_global : completed successfully 
+2018-01-18 09:07:59,403	LoggerReporter	log_event	INFO: task 17, create_otu_tables_from_alignments.py : ready and waiting for resources 
+2018-01-18 09:07:59,403	LoggerReporter	log_event	INFO: task 17, create_otu_tables_from_alignments.py : starting to run 
+2018-01-18 09:07:59,403	LoggerReporter	task_command	INFO: Executing with shell:  create_otu_tables_from_alignments.py /n/hutlab11/databases/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt /n/hutlab11/databases/gg_13_8_otus/rep_set/97_otus.fasta /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_green_genes_mapping_results.uc /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otu_mapping_results.uc /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_otus_nonchimeras.fasta /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_concatenated.fasta /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_taxonomy_open_reference.tsv /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_open_reference.fasta /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_taxonomy_closed_reference.tsv /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_closed_reference.fasta /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_denovo_otu_table.tsv /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_read_counts.tsv
+2018-01-18 09:08:01,308	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:08:01,309	LoggerReporter	log_event	INFO: task 17, create_otu_tables_from_alignments.py : completed successfully 
+2018-01-18 09:08:01,309	LoggerReporter	log_event	INFO: task 20, clustalo_closed_reference : ready and waiting for resources 
+2018-01-18 09:08:01,310	LoggerReporter	log_event	INFO: task 20, clustalo_closed_reference : starting to run 
+2018-01-18 09:08:01,320	LoggerReporter	task_command	INFO: Tracked executable version:  clustalo 1.2.4
+
+2018-01-18 09:08:01,320	LoggerReporter	task_command	INFO: Executing with shell:  remove_if_exists.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_clustalo_aligned_closed_reference.fasta ; clustalo -i /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_closed_reference.fasta -o /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_clustalo_aligned_closed_reference.fasta --threads 1
+2018-01-18 09:09:01,213	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:09:01,214	LoggerReporter	log_event	INFO: task 20, clustalo_closed_reference : completed successfully 
+2018-01-18 09:09:01,214	LoggerReporter	log_event	INFO: task 21, biom : ready and waiting for resources 
+2018-01-18 09:09:01,214	LoggerReporter	log_event	INFO: task 21, biom : starting to run 
+2018-01-18 09:09:02,331	LoggerReporter	task_command	INFO: Tracked executable version:  biom, version 2.1.5
+
+2018-01-18 09:09:02,331	LoggerReporter	task_command	INFO: Executing with shell:  remove_if_exists.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_taxonomy_closed_reference.biom ; biom convert -i /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_taxonomy_closed_reference.tsv -o /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_taxonomy_closed_reference.biom --table-type='OTU table' --to-json --process-obs-metadata=taxonomy --output-metadata-id=taxonomy
+2018-01-18 09:09:04,784	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:09:04,786	LoggerReporter	log_event	INFO: task 21, biom : completed successfully 
+2018-01-18 09:09:04,786	LoggerReporter	log_event	INFO: task 23, normalize_by_copy_number.py : ready and waiting for resources 
+2018-01-18 09:09:04,787	LoggerReporter	log_event	INFO: task 23, normalize_by_copy_number.py : starting to run 
+2018-01-18 09:09:06,543	LoggerReporter	task_command	INFO: Tracked executable version:  Version: normalize_by_copy_number.py 1.1.0
+
+2018-01-18 09:09:06,544	LoggerReporter	task_command	INFO: Executing with shell:  remove_if_exists.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_normalize_by_copy_number.biom ; normalize_by_copy_number.py -i /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_taxonomy_closed_reference.biom -o /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_normalize_by_copy_number.biom
+2018-01-18 09:09:09,998	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:09:09,999	LoggerReporter	log_event	INFO: task 23, normalize_by_copy_number.py : completed successfully 
+2018-01-18 09:09:09,999	LoggerReporter	log_event	INFO: task 25, predict_metagenomes.py : ready and waiting for resources 
+2018-01-18 09:09:09,999	LoggerReporter	log_event	INFO: task 25, predict_metagenomes.py : starting to run 
+2018-01-18 09:09:11,364	LoggerReporter	task_command	INFO: Tracked executable version:  Version: predict_metagenomes.py 1.1.0
+
+2018-01-18 09:09:11,364	LoggerReporter	task_command	INFO: Executing with shell:  remove_if_exists.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_predict_metagenomes.biom ; predict_metagenomes.py -i /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_normalize_by_copy_number.biom -o /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_predict_metagenomes.biom
+2018-01-18 09:10:24,372	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:10:24,372	LoggerReporter	log_event	INFO: task 25, predict_metagenomes.py : completed successfully 
+2018-01-18 09:10:24,373	LoggerReporter	log_event	INFO: task 27, biom : ready and waiting for resources 
+2018-01-18 09:10:24,373	LoggerReporter	log_event	INFO: task 27, biom : starting to run 
+2018-01-18 09:10:25,635	LoggerReporter	task_command	INFO: Tracked executable version:  biom, version 2.1.5
+
+2018-01-18 09:10:25,635	LoggerReporter	task_command	INFO: Executing with shell:  remove_if_exists.py /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_predict_metagenomes.tsv ; biom convert -i /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_predict_metagenomes.biom -o /srv/export/hutlab11_nobackup/share_root/users/syma/ibd_meta_analysis/data/RISK/processed/all_samples_predict_metagenomes.tsv --table-type='OTU table' --to-tsv 
+2018-01-18 09:10:28,989	anadama2.helpers	actually_sh	INFO: Execution complete. Stdout: 
+Stderr: 
+2018-01-18 09:10:28,990	LoggerReporter	log_event	INFO: task 27, biom : completed successfully 
+2018-01-18 09:10:28,991	LoggerReporter	finished	INFO: AnADAMA run finished.
