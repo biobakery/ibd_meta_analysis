@@ -5,7 +5,11 @@
 .Rproj
 .DS_Store
 raw/Misc/
+<<<<<<< HEAD
 raw/RISK/16S/
 raw/PRISM_CSS/16S/
 raw/Pouchitis/16S/
 raw/Jansson_Lamendella_Crohns/16S/
+=======
+raw/RISK/16S/
+>>>>>>> 331400df185810881f47cdf0f8878bfe5f827998
