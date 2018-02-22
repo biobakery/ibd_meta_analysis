@@ -1,10 +1,9 @@
-setwd("/n/hutlab11_nobackup/users/syma/ibd_meta_analysis/")
-source("scripts/source.R")
+library(tidyverse)
 study <- "Jansson_Lamendella_Crohns"
 
-template <- read.csv('data/template.csv',
+template <- read.csv('scripts/template.csv',
                      stringsAsFactors = F)
-meta_raw_merged <- read.table(paste0("raw/", study, "/metadata_raw_merged.txt"),
+meta_raw_merged <- read.table(paste0("raw/", study, "/metadata/metadata_raw_merged.txt"),
                               header = T,
                               sep = '\t',
                               stringsAsFactors = F,
@@ -99,7 +98,7 @@ for(var in setdiff(template$col.name, colnames(meta_curated))) {
 }
 meta_curated <- meta_curated[, template$col.name]
 write.table(meta_curated,
-            file = paste0("curated/", study, ".txt"),
+            file = paste0("processed/", study, "/metadata/metadata.txt"),
             quote = F,
             sep = "\t",
             row.names = F)
