@@ -24,7 +24,7 @@ meta_curated <- meta_raw_merged %>%
            recode("TI" = "biopsy",
                   "rectum" = "biopsy",
                   "stool" = "stool"),
-         disease = diagnosis_full %>% 
+         disease = Diagnosis %>% 
            recode("CD" = "CD",
                   "non-IBD" = "control"),
          age = AgeAtDx %>% as.numeric,
