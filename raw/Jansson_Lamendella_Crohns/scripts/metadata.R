@@ -1,6 +1,9 @@
 library(tidyverse)
 study <- "Jansson_Lamendella_Crohns"
 
+dir.create(paste0("processed/", study, "/metadata/"),
+           recursive = T,
+           showWarnings = F)
 template <- read.csv('scripts/template.csv',
                      stringsAsFactors = F)
 meta_raw_merged <- read.table(paste0("raw/", study, "/metadata/metadata_raw_merged.txt"),
