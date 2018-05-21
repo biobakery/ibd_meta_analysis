@@ -2,30 +2,30 @@ col.name,var.class,uniqueness,requiredness,allowedvalues,description
 dataset_name,character,non-unique,required,*,Name of study
 study_accession,character,non-unique,required,*,Study accession on platform where obtained
 PMID,character,non-unique,optional,*,
-sample_accession,character,unique,required,*,Sample accession on platform where obtained
-sampleID,character,unique,required,*,Unique sample identifier often study_accession and sample_accession together
-subjectID,character,non-unique,optional,*,Subject identifier
-body_site,character,non-unique,optional,TI|rectum|pouch|PPI|stool,
+subject_accesion,character,non-unique,required,*,Subject identifier (work as subject ID when longitudianl study)
+sample_accession,character,non-unique,required,*,Sample accession on platform where obtained
+sampleID,character,unique,required,*,Unique sample identifier often study_accession:subject_accession:sample_accession together
 sample_type,character,non-unique,optional,biopsy|stool,
+body_site,character,non-unique,optional,TI/ileum|rectum|pouch|PPI|stool,
 disease,character,non-unique,optional,CD|UC|IC|control,
 control,character,non-unique,optional,*,Additional control classes
 IBD_subtype,character,non-unique,optional,iCD|cCD|UC,IBD subtype
 IBD_subtype_additional,character,non-unique,optional,*,Additional information in IBD subtype
-L.cat,character,non-unique,optional,*,Disease extent variable for CD
+L.cat,character,non-unique,optional,L1|L2|L3|Lx+Ly,Disease extent variable for CD
 E.cat,character,non-unique,optional,E1|E2|E3,Disease extent variable for UC
 B.cat,character,non-unique,optional,B1|B2|B3,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,Perianal disease?f
-age,character,non-unique,optional,*,Age (in yrs)
-gender,numeric,non-unique,optional,*,
+age,numeric,non-unique,optional,*,Age (in yrs)
+gender,numeric,non-unique,optional,m|f,
 BMI,character,non-unique,optional,*,
 alcohol,character,non-unique,optional,y|n,
 smoke,character,non-unique,optional,y|n,
-country,character,non-unique,optional,m|f,
+country,character,non-unique,optional,*,
 calprotectin,numeric,non-unique,optional,*,Fecal calprotectin
-antibiotics_usage,numeric,non-unique,optional,*,
-antibiotics_family,character,non-unique,optional,,
-time_point,numeric,non-unique,optional,*,
-family,character,non-unique,optional,*,
+antibiotics,character,non-unique,optional,y|n,Treated by antibiotics?
+antibiotics_supp,character,non-unique,optional,*,Additional antibiotics information
+time_point,character,non-unique,optional,*,"Time point ID, if longitudinal study"
+family,character,non-unique,optional,*,"Family ID, if family study"
 DNA_extraction_kit,character,non-unique,optional,Gnome|Illuminakit|MoBio|NorgenBiotek|Qiagen,
 sequencing_platform,character,non-unique,optional,*,
 number_reads,integer,non-unique,optional,*,
