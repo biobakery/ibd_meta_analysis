@@ -1,3 +1,0 @@
-Read sequences here are directly copied from the Broad IBD meta-analysis directory
-/broad/geverslab_microbiome/projects/IBD_metanalysis/
-reads/ is a superset of stiched_reads/. In practice reads/ are used as input for the standard pipeline.

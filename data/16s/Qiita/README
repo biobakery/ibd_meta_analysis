@@ -1,4 +1,0 @@
-16s sequences downloaded from Qiita, stored by study ID
-fastq reads here are demultiplexed and stored in a single file
-Need to be split into single reads with split_sequence_file_on_sample_ids.py
-Processing scripts in data/scripts/
