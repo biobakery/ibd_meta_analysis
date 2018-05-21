@@ -1,23 +1,21 @@
+rm(list = ls())
 library(tidyverse)
+template <- read_csv("scripts/template.csv")
+
 study <- "Jansson_Lamendella_Crohns"
+meta_raw <- read_tsv("raw/Jansson_Lamendella_Crohns/metadata/1629_20180101-113841.txt")
 
 dir.create(paste0("processed/", study, "/metadata/"),
-           recursive = T,
-           showWarnings = F)
-template <- read.csv('scripts/template.csv',
-                     stringsAsFactors = F)
-meta_raw_merged <- read.table(paste0("raw/", study, "/metadata/metadata_raw_merged.txt"),
-                              header = T,
-                              sep = '\t',
-                              stringsAsFactors = F,
-                              check.names = F)
-meta_curated <- meta_raw_merged %>% 
+           recursive = TRUE,
+           showWarnings = FALSE)
+
+meta_curated <- meta_raw %>% 
   mutate(dataset_name = study,
          study_accession = "ERP020401",
          PMID = "28191884",
+         subject_accession = host_subject_id,
          sample_accession = sample_accession,
-         sampleID = paste0(study_accession, ":", sample_accession),
-         subjectID = paste0(study_accession, ":", description.x),
+         sampleID = ,
          body_site = body_site %>% 
            recode("UBERON:feces" = "stool"),
          sample_type = sample_type,
