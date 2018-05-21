@@ -1,0 +1,2 @@
+This directory is used for local storage of data (sequences + metadata) directly obtained (from Broad, NCBI, etc.).
+This is not a part of the processing pipeline and is not synced with the repository!
