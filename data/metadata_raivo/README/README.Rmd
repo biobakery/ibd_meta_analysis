@@ -1,0 +1,134 @@
+---
+title: "IBD meta-analysis metadata processing"
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    toc: yes
+---
+
+## Organization of metadata processing files
+The metadata processing is organized as follows
+
+* **sample2project.txt** - contains infromation about every sample in the collection, with the following columns (without the names in the file).
+    + *GID* - GP identifier for the sample
+    + *StoolID* - stool sample identifier
+    + *OriginalID* - sample identifier in the original study (will be used to connect to original study metadata)
+    + *DonorID* - donor identifier in the original study 
+    + *SequencingRun* - sequencing run identifier
+    + *Technology* - sequencing technology used for the samples (possible values: 16S, WMS, RNA)
+    + *Project* - project name
+
+* **sample2project_common.txt** and **sample2project_common.rds** - same as above, but updated with sample metadata that is common between studies. These files are created by script **merge_annotations.r**
+    
+* **raw/** - directory containing raw annotation files whatever format they might be in.
+
+* **processed/** - directory containing the processed files. 
+    
+    + There will be two sample description files for every project. (XXX will be project name)
+        - **XXX_common.txt** and corresponding **.rds** - a file in a tab separated format with header, listing all the common variables that must be included from every project.
+            * *Project* 
+            * *DonorID*
+            * *OriginalID* or *GID* - to be able to merge with other tables
+            * *Location* - sample location (Possible values: Stool, ...)
+            * *Diagnosis* - diagnosis (Possible values: UC, IC, CD, Control)
+            * *Gender* - (Possible values: Female, Male)
+            * *Age*
+        - **XXX_special.txt** and corresponding **.rds** - a file in a tab separated format with header, listing all the features specifically available for this project. Following variables are needed in every file.
+            * *Project* 
+            * *DonorID*
+            * *OriginalID* or *GID*
+            
+    + **metadata.RData** - one RData object that allows to include all metadata at once 
+
+* **scripts/** - directory for data munging scripts. 
+    + **project_XXX.r** - project based data processing scripts. There should be one for every project turning the metadata in `raw/` to processed tables in `processed/` 
+    + **combine_metadata.r** - onescript to update metadata.RData and other overview tables based on available project based metadata tables.
+
+* **update.r** - master script to re-run all the the project scripts, combine metadata and reknit this document to update the descriptions 
+
+## Overview of the dataset
+```{r, include=FALSE}
+
+knitr::opts_knit$set(root.dir = "~/Raivo/Projects/IBD_metaanalysis/metadata/")
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+library(DT)
+library(forcats)
+```
+
+### Sample numbers and projects
+```{r, echo=FALSE, fig.width = 5}
+
+# sample2project_common = readRDS("metadata/sample2project_common.rds")
+sample2project_common = readRDS("../sample2project_common.rds")
+
+d = sample2project_common %>% 
+  group_by(Technology, Project) %>%
+  summarize(N = n())
+
+d2 = sample2project_common %>% 
+  group_by(Technology, Project) %>%
+  summarize(N = Location %>% is.na() %>% magrittr::not() %>% sum())
+
+p = ggplot(aes(x = Project, y = N, fill = Technology), data = d) + ylim(c(0, max(d$N))) + geom_bar(stat = "identity", position = "dodge") + geom_bar(colour = "black", stat = "identity", position = "dodge", data = d2) + theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+print(p)
+```
+
+### Summary of common metadata
+```{r, echo=FALSE}
+d = sample2project_common %>% 
+  filter(!is.na(Location)) %>% 
+  gather("Variable", "Value", Location, Diagnosis, Gender) %>% 
+  mutate(Value = Value %>% recode("Terminal Ileum" = "Terminal\nIleum")) %>% 
+  mutate(Value =  fct_relevel(Value, "Control", "Stool", "Rectum", "Terminal\nIleum"))
+
+p = ggplot(aes(x = Value), data = d) + geom_bar() + facet_grid(Project ~ Variable, scale = "free_x", space = "free_x") + theme_bw(base_size = 10)
+print(p)
+```
+
+```{r, echo=FALSE}
+p = ggplot(aes(x = Age), data = sample2project_common %>% filter(!is.na(Age))) + geom_histogram(binwidth = 2) + facet_grid(Project ~ ., scale = "free_y") + theme_bw(base_size = 10)
+print(p)
+```
+
+
+
+
+### Other available metadata
+```{r, echo=FALSE}
+files = dir("../processed/", pattern = "(common|special).rds")
+files = data_frame(
+  File = files
+)
+
+files = files %>% 
+  extract(File, c("Project", "Type"), "(.*)_(common|special).rds", remove = F) %>% 
+  mutate(Table = map(File, ~ readRDS(sprintf("../processed/%s", .x))))
+
+pwalk(filter(files, Type == "special"), function(Project, Table, ...){
+  cat(sprintf("\n\n################## %s ####################\n", Project))
+  res = Table %>% 
+    as.tbl %>% 
+    select(-Project, -DonorID, -OriginalID) %>%
+    mutate_if(function(x){is.character(x) | is.factor(x)}, as.factor) %>%
+    summary() %>% 
+    as.matrix()
+  print(res)
+})
+
+```
+
+### Browse sample2project
+```{r, echo=FALSE}
+
+datatable(sample2project_common, options = list(pageLength = 10))
+```
+
+
+
+
+
+
+  

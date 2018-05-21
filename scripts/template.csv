@@ -15,7 +15,7 @@ L.cat,character,non-unique,optional,*,Disease extent variable for CD
 E.cat,character,non-unique,optional,E1|E2|E3,Disease extent variable for UC
 B.cat,character,non-unique,optional,B1|B2|B3,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,Perianal disease?f
-age,character,non-unique,optional,y|n,Age (in yrs)
+age,character,non-unique,optional,*,Age (in yrs)
 gender,numeric,non-unique,optional,*,
 BMI,character,non-unique,optional,*,
 alcohol,character,non-unique,optional,y|n,
