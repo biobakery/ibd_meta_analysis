@@ -1,6 +1,6 @@
 rm(list = ls())
 library(tidyverse)
-template <- read_csv("scripts/template.csv")
+template <- read_csv("data/template.csv")
 
 study <- "Jansson_Lamendella_Crohns"
 meta_raw <- read_tsv("raw/Jansson_Lamendella_Crohns/metadata/1629_20180101-113841.txt")
@@ -8,15 +8,17 @@ meta_raw <- read_tsv("raw/Jansson_Lamendella_Crohns/metadata/1629_20180101-11384
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
-
+summarise(meta_raw)
 meta_curated <- meta_raw %>% 
   mutate(dataset_name = study,
          study_accession = "ERP020401",
          PMID = "28191884",
          subject_accession = host_subject_id,
          sample_accession = sample_accession,
-         sampleID = ,
-         body_site = body_site %>% 
+         sampleID = paste(study_accession, 
+                          subject_accesion,
+                          sample_accession, sep = ":"),
+         sample_type = body_site %>% 
            recode("UBERON:feces" = "stool"),
          sample_type = sample_type,
          disease = diagnosis_full %>% 
