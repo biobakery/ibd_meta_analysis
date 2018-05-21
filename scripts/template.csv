@@ -7,7 +7,7 @@ sampleID,character,unique,required,*,Unique sample identifier often study_access
 subjectID,character,non-unique,optional,*,Subject identifier
 body_site,character,non-unique,optional,TI|rectum|pouch|PPI|stool,
 sample_type,character,non-unique,optional,biopsy|stool,
-disease,character,non-unique,optional,CD|UC|control,
+disease,character,non-unique,optional,CD|UC|IC|control,
 control,character,non-unique,optional,*,Additional control classes
 IBD_subtype,character,non-unique,optional,iCD|cCD|UC,IBD subtype
 IBD_subtype_additional,character,non-unique,optional,*,Additional information in IBD subtype
@@ -15,7 +15,7 @@ L.cat,character,non-unique,optional,*,Disease extent variable for CD
 E.cat,character,non-unique,optional,E1|E2|E3,Disease extent variable for UC
 B.cat,character,non-unique,optional,B1|B2|B3,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,Perianal disease?f
-age,character,non-unique,optional,y|n,Age (in yrs)
+age,character,non-unique,optional,*,Age (in yrs)
 gender,numeric,non-unique,optional,*,
 BMI,character,non-unique,optional,*,
 alcohol,character,non-unique,optional,y|n,
