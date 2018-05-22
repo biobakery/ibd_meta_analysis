@@ -1,14 +1,23 @@
 rm(list = ls())
 library(tidyverse)
-template <- read_csv("data/template.csv")
-
+source("scripts/misc/helpers.R")
 study <- "Jansson_Lamendella_Crohns"
-meta_raw <- read_tsv("raw/Jansson_Lamendella_Crohns/metadata/1629_20180101-113841.txt")
-
+template <- read_csv("data/template.csv")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
-summarise(meta_raw)
+
+
+meta_raw <- paste0("raw/", 
+                   study, 
+                   "/metadata/1629_20180101-113841.txt") %>% 
+  read_csv
+meta_raw %>% 
+  describe %>% 
+  write_csv(paste0("processed/", 
+                   study, 
+                   "/metadata/1629_20180101-113841_summary.txt"))
+meta_raw
 meta_curated <- meta_raw %>% 
   mutate(dataset_name = study,
          study_accession = "ERP020401",
