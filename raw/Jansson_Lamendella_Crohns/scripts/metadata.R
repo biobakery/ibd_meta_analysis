@@ -11,13 +11,12 @@ dir.create(paste0("processed/", study, "/metadata/"),
 meta_raw <- paste0("raw/", 
                    study, 
                    "/metadata/1629_20180101-113841.txt") %>% 
-  read_csv
+  read_tsv
 meta_raw %>% 
   describe %>% 
   write_csv(paste0("processed/", 
                    study, 
-                   "/metadata/1629_20180101-113841_summary.txt"))
-meta_raw
+                   "/metadata/1629_20180101-113841_summary.csv"))
 meta_curated <- meta_raw %>% 
   mutate(dataset_name = study,
          study_accession = "ERP020401",
@@ -29,7 +28,8 @@ meta_curated <- meta_raw %>%
                           sample_accession, sep = ":"),
          sample_type = body_site %>% 
            recode("UBERON:feces" = "stool"),
-         sample_type = sample_type,
+         body_site = body_site %>% 
+           recode("UBERON:feces" = "stool"),
          disease = diagnosis_full %>% 
            recode("CD" = "CD",
                   "UC" = "UC",
