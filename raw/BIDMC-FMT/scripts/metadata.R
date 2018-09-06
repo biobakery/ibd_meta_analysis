@@ -54,6 +54,7 @@ meta_curated <- meta_raw %>%
     smoke = NA,
     country = NA,
     calprotectin = NA,
+    PCDAI = NA,
     antibiotics = Antibiotics %>% 
       recode(Yes = "y",
              No = "n"),
@@ -66,6 +67,10 @@ meta_curated <- meta_raw %>%
       recode(Yes = "y",
              No = "n"),
     steroids_supp = NA,
+    mesalamine = NA,
+    mesalamine_supp = NA,
+    biologics = NA,
+    biologics_supp = NA,
     time_point = NA,
     family = NA,
     DNA_extraction_kit = NA,

@@ -7,25 +7,33 @@ dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
+meta1 <- paste0("raw/", 
+                study, 
+                "/metadata/1629_20180101-113841.txt") %>% 
+  read_tsv # downloaded from Qiita
+meta2 <- paste0("raw/", 
+                study, 
+                "/metadata/ebi_sample_accessions_study_1629.tsv") %>% 
+  read_tsv # downloaded from Qiita
+meta3 <- paste0("raw/", 
+                study, 
+                "/metadata/PRJEB18471.txt") %>% 
+  read_tsv # downloaded from EBI
+meta_raw <- meta1 %>% 
+  left_join(meta2) %>% 
+  left_join(meta3, by = c("sample_accession" = "secondary_sample_accession"))
 
-meta_raw <- paste0("raw/", 
-                   study, 
-                   "/metadata/1629_20180101-113841.txt") %>% 
-  read_tsv
-meta_raw %>% 
-  describe %>% 
-  write_csv(paste0("processed/", 
-                   study, 
-                   "/metadata/1629_20180101-113841_summary.csv"))
 meta_curated <- meta_raw %>% 
   mutate(dataset_name = study,
-         study_accession = "ERP020401",
+         study_accession = "PRJEB18471",
          PMID = "28191884",
          subject_accession = host_subject_id,
+         alternative_subject_accession = NA,
          sample_accession = sample_accession,
-         sampleID = paste(study_accession, 
-                          subject_accesion,
-                          sample_accession, sep = ":"),
+         alternative_sample_accession = sample_accession.y,
+         batch = NA,
+         `16S_sample_accession` = run_accession,
+         WGS_sample_accession = NA,
          sample_type = body_site %>% 
            recode("UBERON:feces" = "stool"),
          body_site = body_site %>% 
@@ -47,38 +55,38 @@ meta_curated <- meta_raw %>%
                   "ICD_nr" = "iCD",
                   "ICD_r" = "iCD",
                   "UC" = "UC",
-                  "LC" = "not applicable",
-                  "CC" = "not applicable",
-                  "HC" = "not applicable"),
+                  "LC" = NA_character_,
+                  "CC" = NA_character_,
+                  "HC" = NA_character_),
          IBD_subtype_additional = ibd_subtype %>% 
            recode("CCD" = "not applicable", 
                   "ICD_nr" = "iCD non resection",
                   "ICD_r" = "iCD resection",
-                  "UC" = "not applicable",
-                  "LC" = "not applicable",
-                  "CC" = "not applicable",
-                  "HC" = "not applicable"),
+                  "UC" = NA_character_,
+                  "LC" = NA_character_,
+                  "CC" = NA_character_,
+                  "HC" = NA_character_),
          L.cat = cd_location %>% 
            recode("Ileal (L1)" = "L1",
                   "Colonic (L2)" = "L2",
                   "Ileocolonic (L3)" = "L3",
                   "Ileal and Upper-GI (L1+L4)" = "L1+L4",
                   "Ileocolonic and Upper-GI (L3+L4)" = "L3+L4",
-                  "not applicable" = "not applicable"),
+                  "not applicable" = NA_character_),
          E.cat = uc_extent %>% 
            recode("Proctitis (E1)" = "E1",
                   "Left sided (E2)" = "E2",
                   "Extensive (E3)" = "E3",
-                  "not applicable" = "not applicable"),
+                  "not applicable" = NA_character_),
          B.cat = cd_behavior %>% 
            recode("Non-stricturing, non-penetrating (B1)" = "B1",
                   "Stricturing (B2)" = "B2",
                   "Penetrating (B3)" = "B3",
-                  "not applicable" = "not applicable"),
+                  "not applicable" = NA_character_),
          perianal = perianal_disease %>% 
            recode("yes" = "y",
                   "no" = "n",
-                  "not applicable" = "not applicable"),
+                  "not applicable" = NA_character_),
          age = NA,
          gender = sex %>% 
            recode("male" = "m",
@@ -90,11 +98,20 @@ meta_curated <- meta_raw %>%
          smoke = NA,
          country = geo_loc_name,
          calprotectin = calprotectin %>% 
-           recode("not applicable" = "-1",
+           recode("not applicable" = "NA",
                   "not collected" = "NA") %>% 
            as.numeric,
-         antibiotics_usage = NA,
-         antibiotics_family = NA,
+         PCDAI = NA,
+         antibiotics = NA,
+         antibiotics_supp = NA,
+         immunosuppressants = NA,
+         immunosuppressants_supp = NA,
+         steroids = NA,
+         steroids_supp = NA,
+         mesalamine = NA,
+         mesalamine_supp = NA,
+         biologics = NA,
+         biologics_supp = NA,
          time_point = timepoint,
          family = NA,
          DNA_extraction_kit = NA,
@@ -105,9 +122,6 @@ meta_curated <- meta_raw %>%
          median_read_length = NA
 ) %>% select(template$col.name %>% one_of)
 
-for(var in setdiff(template$col.name, colnames(meta_curated))) {
-  meta_curated[[var]] <- NA
-}
 meta_curated <- meta_curated[, template$col.name]
 write.table(meta_curated,
             file = paste0("processed/", study, "/metadata/metadata.txt"),
