@@ -24,7 +24,7 @@ meta_raw <- meta1 %>%
   left_join(meta3, by = c("sample_accession" = "secondary_sample_accession"))
 
 meta_curated <- meta_raw %>% 
-  mutate(dataset_name = study,
+  mutate(dataset_name = "Jansson_Lamendella_Crohns",
          study_accession = "PRJEB18471",
          PMID = "28191884",
          subject_accession = host_subject_id,
