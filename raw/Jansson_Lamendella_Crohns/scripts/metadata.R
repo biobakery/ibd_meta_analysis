@@ -88,6 +88,7 @@ meta_curated <- meta_raw %>%
                   "no" = "n",
                   "not applicable" = NA_character_),
          age = NA,
+         age_at_diagnosis = NA,
          gender = sex %>% 
            recode("male" = "m",
                   "female" = "f"),

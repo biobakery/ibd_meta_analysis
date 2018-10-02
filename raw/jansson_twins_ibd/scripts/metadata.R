@@ -50,6 +50,7 @@ meta_curated <- meta_raw %>%
          B.cat = NA,
          perianal = NA,
          age = age,
+         age_at_diagnosis = NA,
          gender = sex %>% 
            recode("male" = "m",
                   "female" = "f"),

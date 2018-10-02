@@ -10,10 +10,15 @@ dir.create(paste0("processed/", study, "/metadata/"),
 meta1 <- read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
   filter(Project == study, Technology == "16S") %>% 
   select(GID, Project, DonorID, OriginalID, SequencingRun)
-meta2 <- paste0("raw/", study, "/metadata/MSH.txt") %>% 
+meta2 <- paste0("raw/", study, 
+                "/metadata/Sample List Broad_pheno7_6_2012.xlsx") %>% 
+  readxl::read_excel()
+meta3 <- paste0("raw/", study, 
+                "/metadata/MSH.txt") %>% 
   read_delim(" ")
 meta_raw <- meta1 %>% 
-  left_join(meta2, by = c("OriginalID" = "DirkSampleID"))
+  left_join(meta2, by = c("OriginalID" = "Sample ID")) %>% 
+  left_join(meta3, by = c("OriginalID" = "DirkSampleID"))
 
 meta_curated <- meta_raw %>% 
   mutate(
@@ -23,26 +28,26 @@ meta_curated <- meta_raw %>%
     subject_accession = DonorID,
     alternative_subject_accession = NA,
     sample_accession = GID,
-    alternative_sample_accession = sample,
+    alternative_sample_accession = OriginalID,
     batch = SequencingRun,
     `16S_sample_accession` = GID,
     WGS_sample_accession = NA,
-    sample_type = biopsy_location %>% 
+    sample_type = `Sample Location` %>% 
       recode(Pouch = "biopsy",
-             `Pre-pouchileum` = "biopsy",
+             PPI = "biopsy",
              Sigmoid = "biopsy",
-             Terminalileum = "biopsy"),
-    body_site = biopsy_location %>% 
+             TI = "biopsy"),
+    body_site = `Sample Location` %>% 
       recode(Pouch = "pouch",
-             `Pre-pouchileum` = "PPI",
+             PPI = "PPI",
              Sigmoid = "sigmoid",
-             Terminalileum = "TI"),
-    disease = Diagnosis %>% 
+             TI = "TI"),
+    disease = Diagnosis.y %>% 
       recode(CD = "CD",
              UC = "UC",
              IC = "IC",
              FAP = "FAP",
-             control = "control"),
+             HC = "control"),
     control = NA,
     IBD_subtype = diseasesubtype %>% 
       recode(iCD = "iCD",
@@ -71,8 +76,9 @@ meta_curated <- meta_raw %>%
       recode(yes = "y",
              no = "n",
              unknown = NA_character_),
-    age = age,
-    gender = Gender %>% 
+    age = Age,
+    age_at_diagnosis = Ageof_Diag,
+    gender = Gender.y %>% 
       recode(Male = "m",
              Female = "f"),
     BMI = NA,

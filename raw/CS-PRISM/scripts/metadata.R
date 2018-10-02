@@ -41,11 +41,12 @@ meta_curated <- meta_raw %>%
     control = NA,
     IBD_subtype = NA,
     IBD_subtype_additional = NA,
-    L.cat = DiseaseLocation,
+    L.cat = Location,
     E.cat = NA,
     B.cat = NA,
     perianal = NA,
     age = Age,
+    age_at_diagnosis = NA,
     gender = Gender %>% 
       recode(Male = "m",
              Female = "f"),
@@ -54,6 +55,7 @@ meta_curated <- meta_raw %>%
     smoke = NA,
     country = NA,
     calprotectin = NA,
+    PCDAI = NA,
     antibiotics = Antibiotics %>% 
       recode(Yes = "y",
              No = "n"),
