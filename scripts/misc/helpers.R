@@ -1,3 +1,46 @@
+# Check that data frame is consistent with template
+check.template <- function(metadata, template) {
+  template <- readr::read_csv("data/template.csv", col_types = readr::cols())
+  # Check that column names agree
+  cond <- colnames(metadata) == template$col.name
+  if(!all(cond)) 
+    stop("The following columns and template don't match!\n",
+         paste(template$col.name[!cond], collapse = ", "))
+  # Check that column availability agrees
+  cond <- metadata %>% 
+    dplyr::select(dplyr::one_of(template$col.name[template$requiredness == "required"])) %>% 
+    sapply(function(x) all(!is.na(x)))
+  if(!all(cond))
+    stop("The following columns that requires full availability don't meet requirements!\n",
+         paste(names(cond)[!cond], collaspse = ", "))
+  # Check that column types agree
+  cond <- sapply(meta_curated, class) == template$var.class
+  if(!all(cond))
+    stop("The following column types and template don't match!\n",
+         paste(names(cond)[!cond], collaspse = ", "))
+  # Check that uniqueness agrees
+  cond <- metadata %>% 
+    dplyr::select(dplyr::one_of(template$col.name[template$uniqueness == "unique"])) %>% 
+    sapply(function(x) !anyDuplicated(x[!is.na(x)])) 
+  if(!all(cond))
+    stop("The following columns that require uniqueness don't meet requirement!\n",
+         paste(names(cond)[!cond], collaspse = ", "))
+  # Check that (for categorical variables) variable content agrees
+  cond <- sapply(template$col.name[template$allowedvalues != "*"], 
+                 function(variable) {
+                   values.allowed <- template$allowedvalues[template$col.name == variable] %>% 
+                     strsplit("|", fixed = TRUE) %>% 
+                     magrittr::extract2(1)
+                   values <- metadata %>% magrittr::extract2(variable)
+                   return(all(values[!is.na(values)] %in% values.allowed))
+                 })
+  if(!all(cond))
+    stop("The following columns that requires specific values don't meet requirement!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  return(TRUE)
+}
+
+# Helper functions for viewing spreadsheets
 describe_var <- function(x) {
   class_x <- class(x)
   if(class_x == "logical") {
@@ -54,12 +97,13 @@ describe_var <- function(x) {
            "summary" = summary_x))
 }
 
+# Helper functions for viewing spreadsheets
 describe <- function(df) {
   df %>% 
-    map_df(describe_var) %>%
-    mutate(info = c("class", "summary")) %>% 
-    gather(variable_name, value, -info) %>% 
-    spread(info, value)
+    purrr::map_df(describe_var) %>%
+    dplyr::mutate(info = c("class", "summary")) %>% 
+    tidyr::gather(variable_name, value, -info) %>% 
+    tidyr::spread(info, value)
 }
 
 # transpose_df <- function(df) {

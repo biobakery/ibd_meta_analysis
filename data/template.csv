@@ -3,19 +3,19 @@ dataset_name,character,non-unique,required,*,Name of study
 study_accession,character,non-unique,required,*,Study accession on platform where obtained
 PMID,character,non-unique,optional,*,
 subject_accession,character,non-unique,required,*,Subject accession on platform where obtained
-alternative_subject_accession,character,non-unique,required,*,Alternative subject accession ID
+alternative_subject_accession,character,non-unique,optional,*,Alternative subject accession ID
 sample_accession,character,unique,required,*,Sample accession on platform where obtained
 alternative_sample_accession,character,unique,optional,*,Alternative sample accession ID
 batch,character,non-unique,optional,*,Batch indicator variable
 16S_sample_accession,character,unique,optional,*,16S sample ID (should match 16S read IDs)
 WGS_sample_accession,character,unique,optional,*,WGS sample ID (should match WGS read IDs)
 sample_type,character,non-unique,optional,biopsy|stool,
-body_site,character,non-unique,optional,TI|ileum|rectum|pouch|PPI|sigmoid|colon|stool,
+body_site,character,non-unique,optional,TI|ileum|cecum|colon|sigmoid|rectum|pouch|PPI|stool,
 disease,character,non-unique,optional,CD|UC|IC|FAP|control,
 control,character,non-unique,optional,*,Additional control classes
 IBD_subtype,character,non-unique,optional,iCD|cCD|CD|UC|IC,IBD subtype
 IBD_subtype_additional,character,non-unique,optional,*,Additional information in IBD subtype
-L.cat,character,non-unique,optional,L1|L2|L3|Lx+Ly,Disease extent variable for CD
+L.cat,character,non-unique,optional,L1|L2|L3|L4|L1+L2|L1+L3|L1+L4|L2+L3|L2+L4|L3+L4,Disease extent variable for CD
 E.cat,character,non-unique,optional,E1|E2|E3,Disease extent variable for UC
 B.cat,character,non-unique,optional,B1|B2|B3,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,Perinanal disease?
@@ -25,7 +25,7 @@ gender,character,non-unique,optional,m|f,
 BMI,numeric,non-unique,optional,*,
 alcohol,character,non-unique,optional,y|n,
 smoke,character,non-unique,optional,former|current|never,
-country,character,non-unique,optional,*,
+site,character,non-unique,optional,*,Geographical location
 calprotectin,numeric,non-unique,optional,*,Fecal calprotectin
 PCDAI,numeric,non-unique,optional,*,Pediatric Crohn’s Disease Activity Index (<= 19yrs old)
 antibiotics,character,non-unique,optional,y|n,
@@ -39,10 +39,12 @@ mesalamine_supp,character,non-unique,optional,*,Additional mesalamine informatio
 biologics,character,non-unique,optional,y|n,
 biologics_supp,character,non-unique,optional,*,Additional biologics information
 time_point,character,non-unique,optional,*,"Time point ID, if longitudinal study"
+time_point_supp,character,non-unique,optional,*,"Additional information on time points (importantly, unit)"
 family,character,non-unique,optional,*,"Family ID, if family study"
-DNA_extraction_kit,character,non-unique,optional,Gnome|Illuminakit|MoBio|NorgenBiotek|Qiagen,
-sequencing_platform,character,non-unique,optional,*,
-number_reads,integer,non-unique,optional,*,
-number_bases,integer,non-unique,optional,*,
-minimum_read_length,integer,non-unique,optional,*,
-median_read_length,integer,non-unique,optional,*,
+family_supp,character,non-unique,optional,*,"Additional information on family (importantly, relationships)"
+extraction_kit_16S,character,non-unique,optional,Gnome|Illuminakit|MoBio|NorgenBiotek|Qiagen,
+sequencing_platform_16S,character,non-unique,optional,*,
+number_reads_16S,integer,non-unique,optional,*,
+number_bases_16S,integer,non-unique,optional,*,
+minimum_read_length_16S,integer,non-unique,optional,*,
+median_read_length_16S,integer,non-unique,optional,*,

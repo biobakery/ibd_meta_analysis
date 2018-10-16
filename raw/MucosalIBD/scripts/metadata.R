@@ -1,19 +1,19 @@
 rm(list = ls())
-library(tidyverse)
+library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "MucosalIBD"
-template <- read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
-  filter(Project == study, Technology == "16S") %>% 
-  select(GID, Project, DonorID, OriginalID, SequencingRun)
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+  dplyr::filter(Project == study, Technology == "16S") %>% 
+  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
 meta2 <- paste0("raw/", study, "/metadata/",
                 study, ".csv") %>% 
-  read_csv %>% 
-  mutate(
+  readr::read_csv() %>% 
+  dplyr::mutate(
     subject_accession = `Attributes/Attribute/13/__text`,
     sample_accession = `Ids/Id/0/__text`,
     body_site = `Attributes/Attribute/7/__text`,
@@ -21,76 +21,83 @@ meta2 <- paste0("raw/", study, "/metadata/",
     disease = `Attributes/Attribute/10/__text`,
     gender = `Attributes/Attribute/11/__text`
   ) %>% 
-  select(subject_accession,
-         sample_accession,
-         body_site,
-         age,
-         disease,
-         gender)
+  dplyr::select(subject_accession,
+                sample_accession,
+                body_site,
+                age,
+                disease,
+                gender)
 meta_raw <- meta1 %>% 
-  left_join(meta2,
-            by = c("DonorID" = "subject_accession"))
+  dplyr::left_join(meta2,
+                   by = c("DonorID" = "subject_accession"))
 
 meta_curated <- meta_raw %>% 
-  mutate(
+  dplyr::mutate(
     dataset_name = "MucosalIBD",
     study_accession = "PRJNA317429",
     PMID = "27699268",
-    subject_accession = DonorID,
-    alternative_subject_accession = NA,
-    sample_accession = sample_accession,
-    alternative_sample_accession = NA,
-    batch = SequencingRun,
-    `16S_sample_accession` = GID,
-    WGS_sample_accession = NA,
+    subject_accession = DonorID %>% as.character(),
+    alternative_subject_accession = NA_character_,
+    sample_accession = OriginalID %>% as.character(),
+    alternative_sample_accession = sample_accession %>% as.character(),
+    batch = SequencingRun %>% as.character(),
+    `16S_sample_accession` = GID %>% as.character(),
+    WGS_sample_accession = NA_character_,
     sample_type = body_site %>% 
-      recode(`epithelium of ileum` = "biopsy"),
+      dplyr::recode("epithelium of ileum" = "biopsy"),
     body_site = body_site %>% 
-      recode(`epithelium of ileum` = "ileum"),
+      dplyr::recode("epithelium of ileum" = "ileum"),
     disease = disease %>% 
-      recode(`Crohn's disease` = "CD",
-             `Not IBD` = "control"),
-    control = NA,
-    IBD_subtype = NA,
-    IBD_subtype_additional = NA,
-    L.cat = NA,
-    E.cat = NA,
-    B.cat = NA,
-    perianal = NA,
-    age = age,
-    age_at_diagnosis = NA,
+      dplyr::recode("Crohn's disease" = "CD",
+             "Not IBD" = "control"),
+    control = disease %>% 
+      dplyr::recode("Crohn's disease" = NA_character_,
+                    "Not IBD" = "nonIBD"),
+    IBD_subtype = NA_character_,
+    IBD_subtype_additional = NA_character_,
+    L.cat = NA_character_,
+    E.cat = NA_character_,
+    B.cat = NA_character_,
+    perianal = NA_character_,
+    age = age %>% as.numeric(),
+    age_at_diagnosis = NA_real_,
     gender = gender %>% 
-      recode(male = "m",
+      dplyr::recode(male = "m",
              female = "f"),
-    BMI = NA,
-    alcohol = NA,
-    smoke = NA,
-    country = NA,
-    calprotectin = NA,
-    PCDAI = NA,
-    antibiotics = NA,
-    antibiotics_supp = NA,
-    immunosuppressants = NA,
-    immunosuppressants_supp = NA,
-    steroids = NA,
-    steroids_supp = NA,
-    mesalamine = NA,
-    mesalamine_supp = NA,
-    biologics = NA,
-    biologics_supp = NA,
-    time_point = NA,
-    family = NA,
-    DNA_extraction_kit = NA,
-    sequencing_platform = NA,
-    number_reads = NA,
-    number_bases = NA,
-    minimum_read_length = NA,
-    median_read_length = NA
-  ) %>% select(template$col.name %>% one_of)
+    BMI = NA_real_,
+    alcohol = NA_character_,
+    smoke = NA_character_,
+    site = NA_character_,
+    calprotectin = NA_real_,
+    PCDAI = NA_real_,
+    antibiotics = NA_character_,
+    antibiotics_supp = NA_character_,
+    immunosuppressants = NA_character_,
+    immunosuppressants_supp = NA_character_,
+    steroids = NA_character_,
+    steroids_supp = NA_character_,
+    mesalamine = NA_character_,
+    mesalamine_supp = NA_character_,
+    biologics = NA_character_,
+    biologics_supp = NA_character_,
+    time_point = NA_character_,
+    time_point_supp = NA_character_,
+    family = NA_character_,
+    family_supp = NA_character_,
+    extraction_kit_16S = NA_character_,
+    sequencing_platform_16S = NA_character_,
+    number_reads_16S = NA_integer_,
+    number_bases_16S = NA_integer_,
+    minimum_read_length_16S = NA_integer_,
+    median_read_length_16S = NA_integer_
+  ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 meta_curated <- meta_curated[, template$col.name]
-write.table(meta_curated,
-            file = paste0("processed/", study, "/metadata/metadata.txt"),
-            quote = F,
-            sep = "\t",
-            row.names = F)
+if(check.template(meta_curated, template)) {
+  cat("Metadata for", study,"processed and check successful!\n")
+  write.table(meta_curated,
+              file = paste0("processed/", study, "/metadata/metadata.txt"),
+              quote = F,
+              sep = "\t",
+              row.names = F)
+}

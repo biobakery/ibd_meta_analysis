@@ -1,133 +1,145 @@
 rm(list = ls())
-library(tidyverse)
+library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "Pouchitis"
-template <- read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
-  filter(Project == study, Technology == "16S") %>% 
-  select(GID, Project, DonorID, OriginalID, SequencingRun)
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+  dplyr::filter(Project == study, Technology == "16S") %>% 
+  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
 meta2 <- paste0("raw/", study, 
                 "/metadata/Sample List Broad_pheno7_6_2012.xlsx") %>% 
   readxl::read_excel()
 meta3 <- paste0("raw/", study, 
                 "/metadata/MSH.txt") %>% 
-  read_delim(" ")
+  readr::read_delim(" ")
 meta_raw <- meta1 %>% 
-  left_join(meta2, by = c("OriginalID" = "Sample ID")) %>% 
-  left_join(meta3, by = c("OriginalID" = "DirkSampleID"))
+  dplyr::left_join(meta2, by = c("OriginalID" = "Sample ID")) %>% 
+  dplyr::left_join(meta3, by = c("OriginalID" = "DirkSampleID"))
 
 meta_curated <- meta_raw %>% 
-  mutate(
+  dplyr::mutate(
     dataset_name = "Pouchitis",
     study_accession = "Pouchitis",
-    PMID = NA,
-    subject_accession = DonorID,
-    alternative_subject_accession = NA,
-    sample_accession = GID,
-    alternative_sample_accession = OriginalID,
-    batch = SequencingRun,
-    `16S_sample_accession` = GID,
-    WGS_sample_accession = NA,
+    PMID = "25887922",
+    subject_accession = DonorID %>% as.character(),
+    alternative_subject_accession = NA_character_,
+    sample_accession = OriginalID %>% as.character(),
+    alternative_sample_accession = NA_character_,
+    batch = SequencingRun %>% as.character(),
+    `16S_sample_accession` = GID %>% as.character(),
+    WGS_sample_accession = NA_character_,
     sample_type = `Sample Location` %>% 
-      recode(Pouch = "biopsy",
-             PPI = "biopsy",
-             Sigmoid = "biopsy",
-             TI = "biopsy"),
+      dplyr::recode("Pouch" = "biopsy",
+                    "PPI" = "biopsy",
+                    "Sigmoid" = "biopsy",
+                    "TI" = "biopsy"),
     body_site = `Sample Location` %>% 
-      recode(Pouch = "pouch",
-             PPI = "PPI",
-             Sigmoid = "sigmoid",
-             TI = "TI"),
+      dplyr::recode("Pouch" = "pouch",
+                    "PPI" = "PPI",
+                    "Sigmoid" = "sigmoid",
+                    "TI" = "TI"),
     disease = Diagnosis.y %>% 
-      recode(CD = "CD",
-             UC = "UC",
-             IC = "IC",
-             FAP = "FAP",
-             HC = "control"),
-    control = NA,
+      dplyr::recode("CD" = "CD",
+                    "UC" = "UC",
+                    "IC" = "IC",
+                    "FAP" = "FAP",
+                    "HC" = "control"),
+    control = Diagnosis.y %>% 
+      dplyr::recode("CD" = NA_character_,
+                    "UC" = NA_character_,
+                    "IC" = NA_character_,
+                    "FAP" = NA_character_,
+                    "HC" = "HC"),
     IBD_subtype = diseasesubtype %>% 
-      recode(iCD = "iCD",
-             cCD = "cCD",
-             CD = "CD",
-             UC = "UC",
-             IC = "IC",
-             control = NA_character_),
-    IBD_subtype_additional = NA,
+      dplyr::recode("iCD" = "iCD",
+                    "cCD" = "cCD",
+                    "CD" = "CD",
+                    "UC" = "UC",
+                    "IC" = "IC",
+                    "control" = NA_character_),
+    IBD_subtype_additional = NA_character_,
     L.cat = disease_extent %>% 
-      recode(L1 = "L1",
-             L2 = "L2",
-             L3 = "L3",
-             .default = NA_character_),
+      dplyr::recode("L1" = "L1",
+                    "L2" = "L2",
+                    "L3" = "L3",
+                    .default = NA_character_),
     E.cat = disease_extent %>% 
-      recode(E1 = "E1",
-             E2 = "E2",
-             E3 = "E3",
-             .default = NA_character_),
+      dplyr::recode("E1" = "E1",
+                    "E2" = "E2",
+                    "E3" = "E3",
+                    .default = NA_character_),
     B.cat = B.cat %>% 
-      recode(B1 = "B1",
-             B2 = "B2",
-             B3 = "B3",
-             unknown = NA_character_),
+      dplyr::recode("B1" = "B1",
+                    "B2" = "B2",
+                    "B3" = "B3",
+                    .default = NA_character_),
     perianal = perinanal %>% 
-      recode(yes = "y",
-             no = "n",
-             unknown = NA_character_),
-    age = Age,
-    age_at_diagnosis = Ageof_Diag,
+      dplyr::recode("yes" = "y",
+                    "no" = "n",
+                    "unknown" = NA_character_),
+    age = Age %>% as.numeric(),
+    age_at_diagnosis = Ageof_Diag %>% 
+      dplyr::recode("UK" = NA_character_) %>% 
+      as.numeric(),
     gender = Gender.y %>% 
-      recode(Male = "m",
-             Female = "f"),
-    BMI = NA,
-    alcohol = NA,
+      dplyr::recode("Male" = "m",
+                    "Female" = "f"),
+    BMI = NA_real_,
+    alcohol = NA_character_,
     smoke = smoking %>% 
-      recode(Current = "current",
-             Former = "former",
-             Never = "never",
-             unknown = NA_character_),
-    country = NA,
-    calprotectin = NA,
-    PCDAI = NA,
+      dplyr::recode("Current" = "current",
+                    "Former" = "former",
+                    "Never" = "never",
+                    "unknown" = NA_character_),
+    site = `Collection Centre` %>% as.character(),
+    calprotectin = NA_real_,
+    PCDAI = NA_real_,
     antibiotics = antibiotics %>% 
-      recode(yes = "y",
-             no = "n",
-             unknown = NA_character_),
-    antibiotics_supp = NA,
+      dplyr::recode("yes" = "y",
+                    "no" = "n",
+                    "unknown" = NA_character_),
+    antibiotics_supp = NA_character_,
     immunosuppressants = immunosup %>% 
-      recode(no = "n",
-             unknown = NA_character_),
-    immunosuppressants_supp = NA,
+      dplyr::recode("no" = "n",
+                    "unknown" = NA_character_),
+    immunosuppressants_supp = NA_character_,
     steroids = steroids %>% 
-      recode(yes = "y",
-             no = "n",
-             unknown = NA_character_),
-    steroids_supp = NA,
+      dplyr::recode("yes" = "y",
+                    "no" = "n",
+                    "unknown" = NA_character_),
+    steroids_supp = NA_character_,
     mesalamine = mesalamine %>% 
-      recode(yes = "y",
-             no = "n",
-             unknown = NA_character_),
-    mesalamine_supp = NA,
+      dplyr::recode("yes" = "y",
+                    "no" = "n",
+                    "unknown" = NA_character_),
+    mesalamine_supp = NA_character_,
     biologics = biologics %>% 
-      recode(yes = "y",
-             no = "n",
-             unknown = NA_character_),
-    biologics_supp = NA,
-    time_point = NA,
-    family = NA,
-    DNA_extraction_kit = NA,
-    sequencing_platform = NA,
-    number_reads = NA,
-    number_bases = NA,
-    minimum_read_length = NA,
-    median_read_length = NA
-  ) %>% select(template$col.name %>% one_of)
+      dplyr::recode("yes" = "y",
+                    "no" = "n",
+                    "unknown" = NA_character_),
+    biologics_supp = NA_character_,
+    time_point = NA_character_,
+    time_point_supp = NA_character_,
+    family = NA_character_,
+    family_supp = NA_character_,
+    extraction_kit_16S = NA_character_,
+    sequencing_platform_16S = NA_character_,
+    number_reads_16S = NA_integer_,
+    number_bases_16S = NA_integer_,
+    minimum_read_length_16S = NA_integer_,
+    median_read_length_16S = NA_integer_
+  ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 meta_curated <- meta_curated[, template$col.name]
-write.table(meta_curated,
-            file = paste0("processed/", study, "/metadata/metadata.txt"),
-            quote = F,
-            sep = "\t",
-            row.names = F)
+if(check.template(meta_curated, template)) {
+  cat("Metadata for", study,"processed and check successful!\n")
+  write.table(meta_curated,
+              file = paste0("processed/", study, "/metadata/metadata.txt"),
+              quote = F,
+              sep = "\t",
+              row.names = F)
+}
