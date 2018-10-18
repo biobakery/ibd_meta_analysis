@@ -30,8 +30,8 @@ meta_curated <- meta_raw %>%
     sample_accession = OriginalID %>% as.character(),
     alternative_sample_accession = NA_character_,
     batch = SequencingRun %>% as.character(),
-    `16S_sample_accession` = GID %>% as.character(),
-    WGS_sample_accession = NA_character_,
+    sample_accession_16S = GID %>% as.character(),
+    sample_accession_WGS = NA_character_,
     sample_type = `Sample Location` %>% 
       dplyr::recode("Pouch" = "biopsy",
                     "PPI" = "biopsy",
@@ -82,9 +82,11 @@ meta_curated <- meta_raw %>%
                     "no" = "n",
                     "unknown" = NA_character_),
     age = Age %>% as.numeric(),
+    age_c = NA_character_,
     age_at_diagnosis = Ageof_Diag %>% 
       dplyr::recode("UK" = NA_character_) %>% 
       as.numeric(),
+    age_at_diagnosis_c = NA_character_,
     gender = Gender.y %>% 
       dplyr::recode("Male" = "m",
                     "Female" = "f"),

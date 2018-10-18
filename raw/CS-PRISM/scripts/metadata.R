@@ -30,8 +30,8 @@ meta_curated <- meta_raw %>%
     sample_accession = GID %>% as.character(),
     alternative_sample_accession = NA_character_,
     batch = SequencingRun %>% as.character(),
-    `16S_sample_accession` = GID %>% as.character(),
-    WGS_sample_accession = NA_character_,
+    sample_accession_16S = GID %>% as.character(),
+    sample_accession_WGS = NA_character_,
     sample_type = Location %>% 
       dplyr::recode("Stool" = "stool"),
     body_site = Location %>% 
@@ -51,7 +51,9 @@ meta_curated <- meta_raw %>%
     B.cat = NA_character_,
     perianal = NA_character_,
     age = Age %>% as.numeric(),
+    age_c = NA_character_,
     age_at_diagnosis = NA_real_,
+    age_at_diagnosis_c = NA_character_,
     gender = Gender %>% 
       dplyr::recode(Male = "m",
                     Female = "f"),

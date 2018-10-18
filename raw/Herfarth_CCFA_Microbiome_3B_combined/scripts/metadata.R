@@ -35,8 +35,8 @@ meta_curated <- meta_raw %>%
     sample_accession = sample_accession %>% as.character(),
     alternative_sample_accession = sample_accession.y %>% as.character(),
     batch = NA_character_,
-    `16S_sample_accession` = run_accession %>% as.character(),
-    WGS_sample_accession = NA_character_,
+    sample_accession_16S = run_accession %>% as.character(),
+    sample_accession_WGS = NA_character_,
     sample_type = body_site %>% 
       dplyr::recode("UBERON:feces" = "stool"),
     body_site = body_site %>% 
@@ -55,7 +55,9 @@ meta_curated <- meta_raw %>%
     B.cat = NA_character_,
     perianal = NA_character_,
     age = age %>% as.numeric(),
+    age_c = NA_character_,
     age_at_diagnosis = NA_real_,
+    age_at_diagnosis_c = NA_character_,
     gender = sex %>% 
       dplyr::recode("male" = "m",
                     "female" = "f",

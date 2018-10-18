@@ -7,8 +7,8 @@ alternative_subject_accession,character,non-unique,optional,*,Alternative subjec
 sample_accession,character,unique,required,*,Sample accession on platform where obtained
 alternative_sample_accession,character,unique,optional,*,Alternative sample accession ID
 batch,character,non-unique,optional,*,Batch indicator variable
-16S_sample_accession,character,unique,optional,*,16S sample ID (should match 16S read IDs)
-WGS_sample_accession,character,unique,optional,*,WGS sample ID (should match WGS read IDs)
+sample_accession_16S,character,unique,optional,*,16S sample ID (should match 16S read IDs)
+sample_accession_WGS,character,unique,optional,*,WGS sample ID (should match WGS read IDs)
 sample_type,character,non-unique,optional,biopsy|stool,
 body_site,character,non-unique,optional,TI|ileum|cecum|colon|sigmoid|rectum|pouch|PPI|stool,
 disease,character,non-unique,optional,CD|UC|IC|FAP|control,
@@ -20,14 +20,16 @@ E.cat,character,non-unique,optional,E1|E2|E3,Disease extent variable for UC
 B.cat,character,non-unique,optional,B1|B2|B3,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,Perinanal disease?
 age,numeric,non-unique,optional,*,Age (in yrs)
+age_c,character,non-unique,optional,*,Sometimes age is recorded in groups instead
 age_at_diagnosis,numeric,non-unique,optional,*,
+age_at_diagnosis_c,character,non-unique,optional,*,Sometimes age is recorded in groups instead
 gender,character,non-unique,optional,m|f,
 BMI,numeric,non-unique,optional,*,
 alcohol,character,non-unique,optional,y|n,
 smoke,character,non-unique,optional,former|current|never,
 site,character,non-unique,optional,*,Geographical location
 calprotectin,numeric,non-unique,optional,*,Fecal calprotectin
-PCDAI,numeric,non-unique,optional,*,Pediatric Crohn’s Disease Activity Index (<= 19yrs old)
+PCDAI,numeric,non-unique,optional,*,Pediatric Crohn?s Disease Activity Index (<= 19yrs old)
 antibiotics,character,non-unique,optional,y|n,
 antibiotics_supp,character,non-unique,optional,*,Additional antibiotics information
 immunosuppressants,character,non-unique,optional,y|n,

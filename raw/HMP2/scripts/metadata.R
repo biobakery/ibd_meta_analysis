@@ -28,8 +28,8 @@ meta_curated <- meta_raw %>%
     sample_accession = Samples.16s %>% as.character(),
     alternative_sample_accession = Project %>% as.character(),
     batch = NA_character_,
-    `16S_sample_accession` = Samples.16s %>% as.character(),
-    WGS_sample_accession = NA_character_,
+    sample_accession_16S = Samples.16s %>% as.character(),
+    sample_accession_WGS = NA_character_,
     sample_type = biopsy_location %>% 
       dplyr::recode("Rectum" = "biopsy",
                     "Ileum" = "biopsy",
@@ -71,7 +71,9 @@ meta_curated <- meta_raw %>%
       dplyr::recode(.missing = NA_character_),
     perianal = NA_character_,
     age = consent_age %>% as.numeric(),
+    age_c = NA_character_,
     age_at_diagnosis = `Age at diagnosis` %>% as.numeric(),
+    age_at_diagnosis_c = NA_character_,
     gender = sex %>% 
       dplyr::recode("Male" = "m",
                     "Female" = "f",
