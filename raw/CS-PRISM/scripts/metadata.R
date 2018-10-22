@@ -16,6 +16,20 @@ meta2 <- paste0("raw/", study, "/metadata/",
 meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
   readr::read_tsv()
+meta4 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
+  readxl::read_xlsx(sheet = "Data")
+meta5 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
+  readxl::read_xlsx(sheet = "metadata")
+load("../ibd_paper/data/phyloseq/genera.RData")
+df_metadata <- sample_data2(phylo_genera) %>% 
+  dplyr::filter(dataset_name %in% c("LSS-PRISM", "CS-PRISM"))
+df_metadata <- df_metadata %>% 
+  dplyr::left_join(meta4, by = c("sample_accession_16S" = "16S G#"))
+df_metadata %>% dplyr::filter(sample_accession_16S %in% meta5$`16S G2`) %>% extract2("dataset_name") %>% unique()
+setdiff(df_metadata$sample_accession_16S, c(meta5$`16S G`, meta5$`16S G2`))
+sum(df_metadata$`Collaborator Sample ID` %in%
+      c(meta5$`flora1 (NI)`, meta5$`flora2 (NI)`, meta5$`flora3 (NI)`, meta5$`flora5 (Inf)`, meta5$`flora6 (Inf)`,
+        meta5$`flora7 (Inf)`, meta5$`flora9 (NI)`, meta5$`flora10 (NI)`))
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2) %>% 
   dplyr::left_join(meta3)
