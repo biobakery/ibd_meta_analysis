@@ -47,7 +47,7 @@ meta_curated <- meta_raw %>%
     control = ibd %>% 
       dplyr::recode("CD" = "not applicable",
                     "UC" = "not applicable",
-                    "Control" = "HC"),
+                    "Control" = "nonIBD"),
     IBD_subtype = NA_character_,
     IBD_subtype_additional = NA_character_,
     L.cat = NA_character_,
