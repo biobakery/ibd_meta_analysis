@@ -16,6 +16,18 @@ meta2 <- paste0("raw/", study, "/metadata/",
 meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
   readr::read_tsv()
+meta4 <- paste0("raw/", study, "/metadata/NIHMS569508-supplement-02.xlsx") %>% 
+  readxl::read_xlsx(sheet = "Table2I-keytaxa")
+meta1$OriginalID %>% 
+  stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
+  intersect(meta4$sample)
+meta1$OriginalID %>% 
+  stringr::str_subset(stringr::fixed("444"))
+meta1$OriginalID %>% 
+  stringr::str_replace_all(stringr::fixed("SKBTI-"), "SKBTI") %>% 
+  stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
+  intersect(meta4$sample) %>% 
+  length()
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2) %>% 
   dplyr::left_join(meta3)
