@@ -11,6 +11,12 @@ meta1 <- paste0("raw/",
                 study, 
                 "/metadata/2538_20180418-110548.txt") %>% 
   readr::read_tsv() # downloaded from Qiita
+meta1 %>% 
+  dplyr::filter(host_scientific_name == "Homo sapiens") %>% 
+  dplyr::group_by(host_subject_id) %>% 
+  dplyr::summarise(n = dplyr::n_distinct(antibiotic_select)) %>% 
+  dplyr::filter(n == 2) 
+meta1 %>% dplyr::filter(host_subject_id == "1003500") %>% dplyr::select(antibiotic_select) %>% extract2("antibiotic_select")
 meta2 <- paste0("raw/", 
                 study, 
                 "/metadata/ebi_sample_accessions_study_2538.tsv") %>% 
