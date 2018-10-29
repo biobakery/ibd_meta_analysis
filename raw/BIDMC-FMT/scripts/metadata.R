@@ -17,13 +17,13 @@ meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
   readr::read_tsv()
 meta_raw <- meta1 %>% 
-  dplyr::left_join(meta2) %>% 
-  dplyr::left_join(meta3)
+  dplyr::left_join(meta2, by = c("Project", "DonorID", "OriginalID")) %>% 
+  dplyr::left_join(meta3, by = c("Project", "DonorID", "OriginalID"))
 
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "BIDMC-FMT",
-    study_accession = "BIDMC-FMT",
+    study_accession = NA_character_,
     PMID = NA_character_,
     subject_accession = DonorID %>% as.character(),
     alternative_subject_accession = NA_character_,
@@ -33,9 +33,12 @@ meta_curated <- meta_raw %>%
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
     sample_type = Location %>% 
-      dplyr::recode("Stool" = "stool"),
+      dplyr::recode("Stool" = "stool",
+                    .missing = NA_character_),
     body_site = Location %>% 
-      dplyr::recode("Stool" = "stool"),
+      dplyr::recode("Stool" = "stool",
+                    .missing = NA_character_),
+    body_site_addtional = NA_character_,
     disease = Diagnosis %>% 
       dplyr::recode("CD" = "CD",
                     .missing = NA_character_),
@@ -50,9 +53,8 @@ meta_curated <- meta_raw %>%
     B.cat = NA_character_,
     perianal = NA_character_,
     age = Age %>% as.numeric(),
-    age_c = NA_character_,
     age_at_diagnosis = NA_real_,
-    age_at_diagnosis_c = NA_character_,
+    race = NA_character_,
     gender = Gender %>% 
       dplyr::recode(Male = "m",
                     Female = "f"),
@@ -62,17 +64,23 @@ meta_curated <- meta_raw %>%
     site = "BIDMC",
     calprotectin = NA_real_,
     PCDAI = NA_real_,
-    antibiotics = Antibiotics %>% 
-      dplyr::recode(Yes = "y",
-                    No = "n"),
+    antibiotics = NA_character_,
+    # Antibiotics %>% 
+    # dplyr::recode(Yes = "y",
+    #               No = "n"),
+    # Set to NA unless confirmed what it means
     antibiotics_supp = NA_character_,
-    immunosuppressants = Immunosuppressants %>% 
-      dplyr::recode(Yes = "y",
-                    No = "n"),
+    immunosuppressants = NA_character_,
+    # Immunosuppressants %>% 
+    # dplyr::recode(Yes = "y",
+    #               No = "n"),
+    # Set to NA unless confirmed what it means
     immunosuppressants_supp = NA_character_,
-    steroids = Steroids %>% 
-      dplyr::recode(Yes = "y",
-                    No = "n"),
+    steroids = NA_character_,
+      # Steroids %>% 
+      # dplyr::recode(Yes = "y",
+      #               No = "n"),
+      # Set to NA unless confirmed what it means
     steroids_supp = NA_character_,
     mesalamine = NA_character_,
     mesalamine_supp = NA_character_,
