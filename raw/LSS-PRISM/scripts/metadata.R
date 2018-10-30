@@ -10,12 +10,14 @@ dir.create(paste0("processed/", study, "/metadata/"),
 meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
   dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
-meta2 <- paste0("raw/", study, "/metadata/",
-                study, "_common.txt") %>% 
-  readr::read_tsv()
-meta3 <- paste0("raw/", study, "/metadata/",
-                study, "_special.txt") %>% 
-  readr::read_tsv()
+meta2 <- readxl::read_xlsx("raw/CS-PRISM/metadata/consolidatedWT_IBD_metadata.xlsx",
+                           sheet = "Data")
+meta3 <- readxl::read_xlsx("raw/CS-PRISM/metadata/consolidatedWT_IBD_metadata.xlsx",
+                           sheet = "metadata")
+meta_raw <- meta1 %>% 
+  dplyr::left_join(meta2, by = c("GID" = "16S G#"))
+meta3 %>% dplyr::filter(`16S G` %in% meta_raw$GID | `16S G2` %in% meta_raw$GID) %>% 
+  extract2("Interval (Categorical)") %>% unique()
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2) %>% 
   dplyr::left_join(meta3)

@@ -10,87 +10,319 @@ dir.create(paste0("processed/", study, "/metadata/"),
 meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
   dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
-meta2 <- paste0("raw/", study, "/metadata/",
-                study, "_common.txt") %>% 
-  readr::read_tsv()
-meta3 <- paste0("raw/", study, "/metadata/",
-                study, "_special.txt") %>% 
-  readr::read_tsv()
-meta4 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
-  readxl::read_xlsx(sheet = "Data")
-meta5 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
+meta2 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
+  readxl::read_xlsx(sheet = "Data") %>% 
+  dplyr::mutate(Included = Included == 35)
+meta3 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
   readxl::read_xlsx(sheet = "metadata")
-load("../ibd_paper/data/phyloseq/genera.RData")
-df_metadata <- sample_data2(phylo_genera) %>% 
-  dplyr::filter(dataset_name %in% c("LSS-PRISM", "CS-PRISM"))
-df_metadata <- df_metadata %>% 
-  dplyr::left_join(meta4, by = c("sample_accession_16S" = "16S G#"))
-df_metadata %>% dplyr::filter(sample_accession_16S %in% meta5$`16S G2`) %>% extract2("dataset_name") %>% unique()
-setdiff(df_metadata$sample_accession_16S, c(meta5$`16S G`, meta5$`16S G2`))
-sum(df_metadata$`Collaborator Sample ID` %in%
-      c(meta5$`flora1 (NI)`, meta5$`flora2 (NI)`, meta5$`flora3 (NI)`, meta5$`flora5 (Inf)`, meta5$`flora6 (Inf)`,
-        meta5$`flora7 (Inf)`, meta5$`flora9 (NI)`, meta5$`flora10 (NI)`))
+meta3_long1 <- meta3 %>% 
+  tidyr::gather(key = `sample collection ID`,
+                value = `sample ID`,
+                `flora1 (NI)`,
+                `flora2 (NI)`,
+                `flora3 (NI)`,
+                `flora5 (Inf)`,
+                `flora6 (Inf)`,
+                `flora7 (Inf)`,
+                `flora9 (NI)`,
+                `flora10 (NI)`) %>% 
+  dplyr::filter(!is.na(`sample ID`)) # First, match based on sampe ID if possible
+meta3_long2 <- meta3 %>% 
+  dplyr::filter(is.na(`flora1 (NI)`),
+                is.na(`flora2 (NI)`),
+                is.na(`flora3 (NI)`),
+                is.na(`flora5 (Inf)`),
+                is.na(`flora6 (Inf)`),
+                is.na(`flora7 (Inf)`),
+                is.na(`flora9 (NI)`),
+                is.na(`flora10 (NI)`)) %>% 
+  tidyr::gather(key = `# of 16S sample`,
+                value = `16S sample ID`,
+                `16S G`, `16S G2`) %>% 
+  dplyr::filter(!is.na(`16S sample ID`)) # Then, match based on GID if sample ID is not available
+# Fortunately these samples are all stool samples
+
+
+# sanity check
 meta_raw <- meta1 %>% 
-  dplyr::left_join(meta2) %>% 
-  dplyr::left_join(meta3)
+  dplyr::left_join(meta2, by = c("GID" = "16S G#")) %>% 
+  dplyr::mutate(SubjectID2 = DonorID %>% 
+                  stringr::str_replace("^P", "")) 
+# Most of the matchings between 16S sample IDs are correct
+unmatched <- meta_raw %>% 
+  dplyr::filter(
+    `Collaborator Sample ID__1` %>% 
+      is_in(meta3_long1$`sample ID`) %>% 
+      not,
+    GID %>% 
+      is_in(meta3_long2$`16S sample ID`) %>% 
+      not,
+    Included)
+# View(unmatched)
+nrow(unmatched)
+
+# First match based on 16S ID samples
+meta_raw_sampleID <- meta_raw %>% 
+  dplyr::inner_join(meta3_long1, by = c("Collaborator Sample ID__1" = "sample ID")) %>% 
+  dplyr::select(-`16S G`, - `16S G2`)
+meta_raw_GID <- meta_raw %>% 
+  dplyr::filter(!(GID %in% meta_raw_sampleID$GID)) %>% 
+  dplyr::inner_join(meta3_long2, by = c("GID" = "16S sample ID")) %>% 
+  dplyr::select(-`flora1 (NI)`,
+                -`flora2 (NI)`,
+                -`flora3 (NI)`,
+                -`flora5 (Inf)`,
+                -`flora6 (Inf)`,
+                -`flora7 (Inf)`,
+                -`flora9 (NI)`,
+                -`flora10 (NI)`,
+                -`# of 16S sample`) %>% 
+  dplyr::mutate(`sample collection ID` = "stool")
+# Sanity check
+nrow(meta_raw_sampleID) + nrow(meta_raw_GID) + nrow(unmatched) == sum(meta_raw$Included)
+all(colnames(meta_raw_sampleID) == colnames(meta_raw_GID))
+
+meta_raw <- rbind(meta_raw_sampleID, meta_raw_GID)
 
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "CS-PRISM",
-    study_accession = "CS-PRISM",
+    study_accession = NA_character_,
     PMID = "23013615",
     subject_accession = DonorID %>% as.character(),
-    alternative_subject_accession = NA_character_,
+    alternative_subject_accession = SubjectID2 %>% as.character(),
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = NA_character_,
+    alternative_sample_accession = `Collaborator Sample ID__1` %>% as.character(),
     batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
-    sample_type = Location %>% 
-      dplyr::recode("Stool" = "stool"),
-    body_site = Location %>% 
-      dplyr::recode("Stool" = "stool"),
+    sample_type = `sample collection ID` %>% 
+      dplyr::recode("stool" = "stool",
+                    .default = "biopsy",
+                    .missing = NA_character_),
+    body_site_additional = dplyr::case_when(
+      `sample collection ID` == "stool" ~ "stool",
+      `sample collection ID` %in% c("flora1 (NI)", "flora2 (NI)", "flora3 (NI)") ~  
+        `Location of first non-inflamed tissue`,
+      `sample collection ID` %in% c("flora5 (Inf)", "flora6 (Inf)", "flora7 (Inf)") ~
+        `Location of first inflamed tissue`,
+      `sample collection ID` %in% c("flora9 (NI)", "flora10 (NI)") ~
+        `Location of second non-inflamed tissue`,
+      TRUE ~ NA_character_),
+    body_site = body_site_additional %>% dplyr::recode(
+      "Ascending (right-sided) colon" = "colon",
+      "Cecum" = "cecum", 
+      "Descending (left-sided) colon" = "colon",
+      "J-Pouch" = "pouch",
+      "Neo-ileum" = "neo-ileum",
+      "Rectum" = "rectum",
+      "Sigmoid Colon" = "sigmoid",
+      "stool" = "stool",
+      "Terminal ileum" = "ileum",
+      "Transverse colon" = "colon",
+      .missing = NA_character_),
     disease = Diagnosis %>% 
-      dplyr::recode("CD" = "CD",
-                    "UC" = "UC",
-                    "Control" = "control"),
+      dplyr::recode("Indeterminate colitis" = "IC",
+                    "Crohn's Disease" = "CD",
+                    "Ulcerative colitis" = "UC",
+                    "Healthy control" = "control",
+                    "Disease control" = "control",
+                    "Disease control (Unspecified ileitis)" = "control",
+                    .missing = NA_character_),
     control = Diagnosis %>% 
-      dplyr::recode("CD" = NA_character_,
-                    "UC" = NA_character_,
-                    "Control" = "HC"),
+      dplyr::recode("Healthy control" = "HC",
+                    "Disease control" = "nonIBD",
+                    "Disease control (Unspecified ileitis)" = "nonIBD",
+                    .default = NA_character_,
+                    .missing = NA_character_),
     IBD_subtype = NA_character_,
     IBD_subtype_additional = NA_character_,
-    L.cat = NA_character_,
-    E.cat = NA_character_,
-    B.cat = NA_character_,
-    perianal = NA_character_,
-    age = Age %>% as.numeric(),
-    age_c = NA_character_,
-    age_at_diagnosis = NA_real_,
-    age_at_diagnosis_c = NA_character_,
-    gender = Gender %>% 
+    L.cat = `Location (L) prior to first surgery` %>% 
+      dplyr::recode("L3 (Ileocolon)" = "L3",
+                    "L2 (Colon)" = "L2", 
+                    "L1 (TI)" = "L1",
+                    "L1 + L4 (TI and Upper GI)" = "L1 + L4",
+                    "L3 + L4 (Ileocolon and Upper GI)" = "L3 + L4",
+                    "L2 + L4 (Colon and upper GI)" = "L2 + L4",
+                    "L4 (Upper GI)" = "L4",
+                    .missing = NA_character_),
+    E.cat = `Extent (E)` %>% 
+      dplyr::recode("E2 (Left-sided UC)" = "E2",
+                    "E3 (Extensive UC / Pancolitis)" = "E3",
+                    "E1 (Ulcerative proctitis)" = "E1",
+                    .missing = NA_character_),
+    B.cat = `Behavior (B)` %>% 
+      dplyr::recode("B3 (Penetrating disease)" = "B3",            
+                    "B1 (Inflammatory disease)" = "B1",
+                    "B1p (Inflammatory, perianal disease)" = "B1",
+                    "B2 (Stricturing disease)" = "B2",
+                    "B2p (Stricturing and perianal disease)" = "B2",
+                    "B3p (Penetrating and perianal disease)" = "B3",
+                    .missing = NA_character_),
+    perianal = `Behavior (B)` %>% 
+      dplyr::recode("B3 (Penetrating disease)" = "n",            
+                    "B1 (Inflammatory disease)" = "n",
+                    "B1p (Inflammatory, perianal disease)" = "y",
+                    "B2 (Stricturing disease)" = "n",
+                    "B2p (Stricturing and perianal disease)" = "y",
+                    "B3p (Penetrating and perianal disease)" = "y",
+                    .missing = NA_character_),
+    age = `Age at sample collection (year)` %>% as.numeric(),
+    age_at_diagnosis = `Age at Diagnosis` %>% as.numeric(),
+    race = Race %>% 
+      dplyr::recode("White" = "white",
+                    "Asian" = "asian_pacific_islander",                           
+                    "Black or African American" = "african_american",
+                    "More than one race" = "more_than_one_race",
+                    "Other" = NA_character_,
+                    "American Indian or Alaska Native" = "native_american",
+                    "Refused" = NA_character_,
+                    .missing = NA_character_),
+    gender = Sex %>% 
       dplyr::recode(Male = "m",
-                    Female = "f"),
-    BMI = NA_real_,
+                    Female = "f",
+                    .missing = NA_character_),
+    BMI = ifelse(Weight != 999,
+                 Weight,
+                 NA) /
+      ifelse(Height != 999,
+             (Height/100)^2,
+             NA),
     alcohol = NA_character_,
-    smoke = NA_character_,
+    smoke = `smoking status` %>% 
+      dplyr::recode("Never smoked" = "never",
+                    "Current smoker" = "current",
+                    "Former smoker" = "former",
+                    "Unknown/unspecified" = NA_character_,
+                    .missing = NA_character_),
     site = "MGH",
-    calprotectin = NA_real_,
+    calprotectin = `Fecal Calprotectin Results` %>% 
+      stringr::str_replace_all(stringr::fixed("ug/g"), "") %>% 
+      as.numeric,
     PCDAI = NA_real_,
-    antibiotics = Antibiotics %>% 
-      dplyr::recode(Yes = "y",
-                    No = "n"),
-    antibiotics_supp = NA_character_,
-    immunosuppressants = Immunosuppressants %>% 
-      dplyr::recode(Yes = "y",
-                    No = "n"),
-    immunosuppressants_supp = NA_character_,
-    steroids = Steroids %>% 
-      dplyr::recode(Yes = "y",
-                    No = "n"),
-    steroids_supp = NA_character_,
-    mesalamine = NA_character_,
-    mesalamine_supp = NA_character_,
+    antibiotics = dplyr::case_when(
+      `Flagyl (Metronidazole)` %in% "Currently taking" |
+        `Cipro (Ciprofloxacin)` %in% "Currently taking" |
+        `Xifaxin (rifaxamin)` %in% "Currently taking" |
+        Levaquin %in% "Currently taking" ~ "y",
+      `Flagyl (Metronidazole)` == "Not currently taking" &
+        `Cipro (Ciprofloxacin)` == "Not currently taking" &
+        `Xifaxin (rifaxamin)` == "Not currently taking" &
+        Levaquin == "Not currently taking" ~ "n",
+      TRUE ~ NA_character_
+    ) ,
+    antibiotics_supp = 
+      paste0(ifelse(`Flagyl (Metronidazole)` %in% "Currently taking",
+                    "Flagyl (Metronidazole),",
+                    ""),
+             ifelse(`Cipro (Ciprofloxacin)` %in% "Currently taking",
+                    "Cipro (Ciprofloxacin),",
+                    ""),
+             ifelse(`Xifaxin (rifaxamin)` %in% "Currently taking",
+                    "Xifaxin (rifaxamin),",
+                    ""),
+             ifelse(Levaquin %in% "Currently taking",
+                    "Levaquin,",
+                    "")) %>% 
+      stringr::str_replace_all(",$", ""),
+    immunosuppressants = dplyr::case_when(
+      `Azathioprine (Imuran, Azasan)` %in% "Currently taking" |
+        `Methotrexate` %in% "Currently taking" |
+        `Mercaptopurine (Purinethol, 6MP)` %in% "Currently taking" ~ "y",
+      `Azathioprine (Imuran, Azasan)` == "Not currently taking" &
+        `Methotrexate` == "Not currently taking" &
+        `Mercaptopurine (Purinethol, 6MP)` == "Not currently taking" ~ "n",
+      TRUE ~ NA_character_
+    ),
+    immunosuppressants_supp = 
+      paste0(ifelse(`Azathioprine (Imuran, Azasan)` %in% "Currently taking",
+                    "Azathioprine (Imuran, Azasan),",
+                    ""),
+             ifelse(`Methotrexate` %in% "Currently taking",
+                    "Methotrexate,",
+                    ""),
+             ifelse(`Mercaptopurine (Purinethol, 6MP)` %in% "Currently taking",
+                    "Mercaptopurine (Purinethol, 6MP),",
+                    "")) %>% 
+      stringr::str_replace_all(",$", ""),
+    steroids = dplyr::case_when(
+      `Prednisone` %in% "Currently taking" |
+        `Entocort (Budesonide)` %in% "Currently taking" |
+        `Uceris (Budesonide ER)` %in% "Currently taking" |
+        `SoluMedrol (Medrol)` %in% "Currently taking" |
+        `IV steroids` %in% "Currently taking" |
+        `Cortenemas, Cortifoam, Proctofoam` %in% "Currently taking" ~ "y",
+      `Prednisone` == "Not currently taking" |
+        `Entocort (Budesonide)` == "Not currently taking" |
+        `Uceris (Budesonide ER)` == "Not currently taking" |
+        `SoluMedrol (Medrol)` == "Not currently taking" |
+        `IV steroids` == "Not currently taking" |
+        `Cortenemas, Cortifoam, Proctofoam` == "Not currently taking" ~ "n",
+      TRUE ~ NA_character_
+    ),
+    steroids_supp = 
+      paste0(ifelse(`Prednisone` %in% "Currently taking",
+                    "Prednisone,",
+                    ""),
+             ifelse(`Entocort (Budesonide)` %in% "Currently taking",
+                    "Entocort (Budesonide),",
+                    ""),
+             ifelse(`Uceris (Budesonide ER)` %in% "Currently taking",
+                    "Uceris (Budesonide ER),",
+                    ""),
+             ifelse(`SoluMedrol (Medrol)` %in% "Currently taking",
+                    "SoluMedrol (Medrol),",
+                    ""),
+             ifelse(`IV steroids` %in% "Currently taking",
+                    "IV steroids,",
+                    ""),
+             ifelse(`Cortenemas, Cortifoam, Proctofoam` %in% "Currently taking",
+                    "Cortenemas, Cortifoam, Proctofoam,",
+                    "")) %>% 
+      stringr::str_replace_all(",$", ""),
+    mesalamine_5ASA = dplyr::case_when(
+      `Delzicol (oral mesalamine)` %in% "Currently taking" |
+        `Asacol (mesalamine)` %in% "Currently taking" |
+        `Pentasa (mesalamine)` %in% "Currently taking" |
+        `Lialda (mesalamine)` %in% "Currently taking" |
+        `Apriso (mesalamine)` %in% "Currently taking" |
+        `Colazal (balasalizide)` %in% "Currently taking" |
+        `Sulfazalazine (Azulfidine)` %in% "Currently taking" |
+        `Dipentum (olsalazine)` %in% "Currently taking" |
+        `Rowasa enemas (mesalamine enemas)` %in% "Currently taking" |
+        `Canasa suppositories (mesalamine suppositories)` %in% "Currently taking" ~ "y",
+      `Delzicol (oral mesalamine)` == "Not currently taking" |
+        `Asacol (mesalamine)` == "Not currently taking" |
+        `Pentasa (mesalamine)` == "Not currently taking" |
+        `Lialda (mesalamine)` == "Not currently taking" |
+        `Apriso (mesalamine)` == "Not currently taking" |
+        `Colazal (balasalizide)` == "Not currently taking" |
+        `Sulfazalazine (Azulfidine)` == "Not currently taking" |
+        `Dipentum (olsalazine)` == "Not currently taking" |
+        `Rowasa enemas (mesalamine enemas)` == "Not currently taking" |
+        `Canasa suppositories (mesalamine suppositories)` == "Not currently taking" ~ "n",
+      TRUE ~ NA_character_
+    ),
+    mesalamine_5ASA_supp = 
+      paste0(ifelse(`Delzicol (oral mesalamine)` %in% "Currently taking",
+                    "Delzicol (oral mesalamine),",
+                    ""),
+             ifelse(`Asacol (mesalamine)` %in% "Currently taking",
+                    "Asacol (mesalamine),",
+                    ""),
+             ifelse(`Pentasa (mesalamine)` %in% "Currently taking",
+                    "Uceris (Budesonide ER),",
+                    ""),
+             ifelse(`SoluMedrol (Medrol)` %in% "Currently taking",
+                    "SoluMedrol (Medrol),",
+                    ""),
+             ifelse(`IV steroids` %in% "Currently taking",
+                    "IV steroids,",
+                    ""),
+             ifelse(`Cortenemas, Cortifoam, Proctofoam` %in% "Currently taking",
+                    "Cortenemas, Cortifoam, Proctofoam,",
+                    "")) %>% 
+      stringr::str_replace_all(",$", ""),
     biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = NA_character_,
