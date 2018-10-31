@@ -1,0 +1,113 @@
+rm(list = ls())
+library(magrittr)
+source("scripts/misc/helpers.R")
+study <- "PROTECT"
+template <- readr::read_csv("data/template.csv")
+dir.create(paste0("processed/", study, "/metadata/SupplementTable6.xlsx"),
+           recursive = TRUE,
+           showWarnings = FALSE)
+
+meta_raw <- paste0("raw/", 
+                   study, 
+                   "/metadata/SupplementTable6.xlsx") %>% 
+  readxl::read_xlsx(sheet = "SupplementTable6", skip = 2) # downloaded from Qiita
+meta_curated <- meta_raw %>% 
+  dplyr::mutate(
+    dataset_name = study %>% as.character(),
+    study_accession = NA_character_,
+    PMID = "30308161",
+    subject_accession = SubjectID %>% as.character(),
+    alternative_subject_accession = NA_character_,
+    sample_accession = GID %>% as.character(),
+    alternative_sample_accession = NA_character_,
+    batch = NA_character_,
+    sample_accession_16S = GID %>% as.character(),
+    sample_accession_WGS = NA_character_,
+    sample_type = sampleType %>% 
+      dplyr::recode("biopsy" = "biopsy",
+                    "stool" = "stool",
+                    .missing = NA_character_),
+    body_site = sampleType %>% 
+      dplyr::recode("biopsy" = "rectum",
+                    "stool" = "stool",
+                    .missing = NA_character_),
+    body_site_additional = NA_character_,
+    disease = "UC",
+    control = NA_character_,
+    IBD_subtype = NA_character_,
+    IBD_subtype_additional = NA_character_,
+    L.cat = NA_character_,
+    E.cat = MONTREAL_ORD %>% 
+      dplyr::recode("Extensive or Pancolitis or Unasessable" = "E3",
+                    "Left-sided colitis" = "E2",
+                    "Proctosigmoiditis" = "E1",
+                    .missing = NA_character_),
+    B.cat = NA_character_,
+    perianal = NA_character_,
+    age = age %>% as.numeric,
+    age_at_diagnosis = age %>% as.numeric, # can do this because early onset
+    age_at_diagnosis.cat = NA_character_,
+    race = race %>% 
+      dplyr::recode("White" = "white",
+                    "Black" = "african_american",
+                    "Asian" = "asian_pacific_islander",
+                    "Native American" = "native_american",
+                    "More than one" = "more_than_one",
+                    "Unknown" = NA_character_,
+                    .missing = NA_character_),
+    gender = gender %>% 
+      dplyr::recode("M" = "m",
+                    "F" = "f",
+                    .missing = NA_character_),
+    BMI = NA_real_,
+    alcohol = NA_character_,
+    smoke = NA_character_,
+    site = "US_and_Canada",
+    calprotectin = CALPROTECTIN_WKall %>% 
+      dplyr::recode("NA" = NA_character_) %>% 
+      as.numeric(),
+    PCDAI = NA_real_,
+    antibiotics = dplyr::case_when(
+      antibiotics == "No" ~ "n",
+      !is.na(antibiotics_time_to) & antibiotics_time_to <= 27  ~ "y",
+      TRUE ~ "n"),
+    antibiotics_supp = antibiotics_type %>% as.character(),
+    immunosuppressants = NA_character_,
+    immunosuppressants_supp = NA_character_,
+    steroids = dplyr::case_when(
+      collectionWeek == 0 ~ "n",
+      collectionWeek == 4 & INITIAL_TRT_C4 %in% c("CS-Oral", "CS-IV") ~ "y",
+      TRUE ~ NA_character_),
+    steroids_supp = ifelse(collectionWeek == 4 & INITIAL_TRT_C4 %in% c("CS-Oral", "CS-IV"),
+                           INITIAL_TRT_C4,
+                           NA_character_),
+    mesalamine_5ASA = dplyr::case_when(
+      collectionWeek == 0 ~ "n",
+      collectionWeek == 4 & INITIAL_TRT_C4 %in% "5ASA" ~ "y",
+      TRUE ~ NA_character_),
+    mesalamine_5ASA_supp = ifelse(collectionWeek == 4 & INITIAL_TRT_C4 %in% "5ASA",
+                                  INITIAL_TRT_C4,
+                                  NA_character_),
+    biologics = NA_character_,
+    biologics_supp = NA_character_,
+    time_point = collectionWeek %>% as.character(),
+    time_point_supp = "collection week",
+    family = NA_character_,
+    family_supp = NA_character_,
+    extraction_kit_16S = NA_character_,
+    sequencing_platform_16S = NA_character_,
+    number_reads_16S = NA_integer_,
+    number_bases_16S = NA_integer_,
+    minimum_read_length_16S = NA_integer_,
+    median_read_length_16S = NA_integer_
+  ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+
+meta_curated <- meta_curated[, template$col.name]
+if(check.template(meta_curated, template)) {
+  cat("Metadata for", study,"processed and check successful!\n")
+  write.table(meta_curated,
+              file = paste0("processed/", study, "/metadata/metadata.txt"),
+              quote = F,
+              sep = "\t",
+              row.names = F)
+}
