@@ -22,9 +22,10 @@ B.cat,character,non-unique,optional,B1|B2|B3,y,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,y,Perinanal disease?
 age,numeric,non-unique,optional,*,n,Age (in yrs)
 age_at_diagnosis,numeric,non-unique,optional,*,y,Age at diagnosis (in yrs)
+age_at_diagnosis.cat,character,non-unique,optional,A1|A2|A3,y,Sometimes Montreal classiciation of age at diagnosis is provided instead
 race,character,non-unique,optional,white|african_american|asian_pacific_islander|native_american|more_than_one|other,y,
 gender,character,non-unique,optional,m|f,y,
-BMI,numeric,non-unique,optional,*,y,
+BMI,numeric,non-unique,optional,*,n,
 alcohol,character,non-unique,optional,y|n,n,
 smoke,character,non-unique,optional,former|current|never,n,
 site,character,non-unique,optional,*,n,Geographical location

@@ -37,6 +37,35 @@ check.template <- function(metadata, template) {
   if(!all(cond))
     stop("The following columns that requires specific values don't meet requirement!\n",
          paste(names(cond)[!cond], collapse = ", "))
+  # Check that subject-specific variables are consistent
+  cond <- sapply(setdiff(template$col.name[template$`subject specific?` == "y"], 
+                         "subject_accession"), 
+                 function(variable) {
+                   metadata %>% 
+                     dplyr::group_by(subject_accession) %>% 
+                     dplyr::summarise(n_cat = dplyr::n_distinct(!!rlang::sym(variable),
+                                                                na.rm = TRUE)) %>% 
+                     dplyr::mutate(is_unique = n_cat <= 1) %>% 
+                     extract2("is_unique") %>% 
+                     all()
+                 })
+  if(!all(cond))
+    stop("The following columns should be subject-specific!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  cond <- sapply(setdiff(template$col.name[template$`subject specific?` == "y"], 
+                         "subject_accession"), 
+                 function(variable) {
+                   metadata %>% 
+                     dplyr::group_by(subject_accession) %>% 
+                     dplyr::summarise(n_cat = dplyr::n_distinct(!!rlang::sym(variable),
+                                                                na.rm = FALSE)) %>% 
+                     dplyr::mutate(is_unique = n_cat == 1) %>% 
+                     extract2("is_unique") %>% 
+                     all()
+                 })
+  if(!all(cond))
+    stop("The following subject-specific columns have uneven missingness pattern!\n",
+         paste(names(cond)[!cond], collapse = ", "))
   return(TRUE)
 }
 

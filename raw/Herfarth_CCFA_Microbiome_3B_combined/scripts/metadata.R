@@ -12,11 +12,7 @@ meta1 <- paste0("raw/",
                 "/metadata/2538_20180418-110548.txt") %>% 
   readr::read_tsv() # downloaded from Qiita
 meta1 %>% 
-  dplyr::filter(host_scientific_name == "Homo sapiens") %>% 
-  dplyr::group_by(host_subject_id) %>% 
-  dplyr::summarise(n = dplyr::n_distinct(antibiotic_select)) %>% 
-  dplyr::filter(n == 2) 
-meta1 %>% dplyr::filter(host_subject_id == "1003500") %>% dplyr::select(antibiotic_select) %>% extract2("antibiotic_select")
+  dplyr::filter(host_scientific_name == "Homo sapiens")
 meta2 <- paste0("raw/", 
                 study, 
                 "/metadata/ebi_sample_accessions_study_2538.tsv") %>% 
@@ -47,23 +43,35 @@ meta_curated <- meta_raw %>%
       dplyr::recode("UBERON:feces" = "stool"),
     body_site = body_site %>% 
       dplyr::recode("UBERON:feces" = "stool"),
+    body_site_additional = NA_character_,
     disease = ibd %>% 
       dplyr::recode("Crohns" = "CD",
                     "Control" = "control"),
     control = ibd %>% 
-      dplyr::recode("CD" = "not applicable",
-                    "UC" = "not applicable",
+      dplyr::recode("Crohns" = NA_character_,
                     "Control" = "nonIBD"),
     IBD_subtype = NA_character_,
     IBD_subtype_additional = NA_character_,
-    L.cat = NA_character_,
+    L.cat = disease_location %>% 
+      stringr::str_remove_all("^A\\d") %>% 
+      stringr::str_remove_all("B\\d$") %>% 
+      stringr::str_replace_all("^l", "L") %>% 
+      dplyr::recode("Missing: Not provided" = NA_character_),
     E.cat = NA_character_,
-    B.cat = NA_character_,
+    B.cat = disease_location %>% 
+      stringr::str_remove_all("^A\\d") %>% 
+      stringr::str_remove_all("^[Ll]\\d") %>% 
+      dplyr::recode("Missing: Not provided" = NA_character_),
     perianal = NA_character_,
     age = age %>% as.numeric(),
-    age_c = NA_character_,
     age_at_diagnosis = NA_real_,
-    age_at_diagnosis_c = NA_character_,
+    age_at_diagnosis.cat = disease_location %>% 
+      stringr::str_remove_all("B\\d$") %>% 
+      stringr::str_remove_all("[Ll]\\d$") %>% 
+      dplyr::recode("Missing: Not provided" = NA_character_),
+    race = race %>% 
+      dplyr::recode("Missing: Not provided" = NA_character_,
+                    "Caucasian" = "white"),
     gender = sex %>% 
       dplyr::recode("male" = "m",
                     "female" = "f",
@@ -84,17 +92,28 @@ meta_curated <- meta_raw %>%
                     "former, 10 years" = "former",
                     "Never" = "never",
                     "Missing: Not provided" = NA_character_),
-    site = NA_character_,
+    site = "UNC",
     calprotectin = NA_real_,
     PCDAI = NA_real_,
     antibiotics = NA_character_,
     antibiotics_supp = NA_character_,
     immunosuppressants = NA_character_,
+      # immunosuppressants %>% 
+      # dplyr::recode("1" = "y",
+      #        "0" = "n",
+      #        "Missing: Not provided" = NA_character_),
     immunosuppressants_supp = NA_character_,
     steroids = NA_character_,
+      # steroids %>% 
+      # dplyr::recode("0" = "n",
+      #        "Missing: Not provided" = NA_character_),
     steroids_supp = NA_character_,
-    mesalamine = NA_character_,
-    mesalamine_supp = NA_character_,
+    mesalamine_5ASA = NA_character_,
+      # asa_5_asa %>%
+      # dplyr::recode("1" = "y",
+      #        "0" = "n",
+      #        "Missing: Not provided" = NA_character_),
+    mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = collection_date %>% 
@@ -109,7 +128,8 @@ meta_curated <- meta_raw %>%
     number_bases_16S = NA_integer_,
     minimum_read_length_16S = NA_integer_,
     median_read_length_16S = NA_integer_
-  ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+  ) %>% dplyr::select(template$col.name %>% dplyr::one_of()) %>% 
+  dplyr::filter(sample_accession != "ERS1973740") # This one seems to be mislabelled
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {
