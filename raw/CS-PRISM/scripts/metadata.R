@@ -348,11 +348,18 @@ meta_curated <- meta_raw %>%
     number_bases_16S = NA_integer_,
     minimum_read_length_16S = NA_integer_,
     median_read_length_16S = NA_integer_
-  ) %>% dplyr::select(template$col.name %>% dplyr::one_of()) %>% 
-  dplyr::filter(!(is.na(alternative_sample_accession) | duplicated(alternative_sample_accession)))
+  ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
-meta_curated_test <- meta_curated %>% 
-  dplyr::mutate(UC = check_disease(meta_curated, "UC"))
+
+# Four duplicate labelling of alternative sample accession
+meta_curated[meta_curated$sample_accession %in% c("G89732","G89735","G23975","G23992"), 
+             "alternative_sample_accession"] <- NA_character_
+
+# Some CD patients have E category??
+# meta_curated_test <- meta_curated %>% 
+#   dplyr::mutate(UC = check_disease(meta_curated, "UC"))
+# meta_curated_test %>% dplyr::filter(!UC) %>% View
+meta_curated[meta_curated$sample_accession %in% c("G19244", "G34176", "G89775"), "E.cat"] <- NA_character_
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {
