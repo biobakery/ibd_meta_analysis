@@ -16,18 +16,18 @@ meta2 <- paste0("raw/", study, "/metadata/",
 meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
   readr::read_tsv()
-meta4 <- paste0("raw/", study, "/metadata/NIHMS569508-supplement-02.xlsx") %>% 
-  readxl::read_xlsx(sheet = "Table2I-keytaxa")
-meta1$OriginalID %>% 
-  stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
-  intersect(meta4$sample)
-meta1$OriginalID %>% 
-  stringr::str_subset(stringr::fixed("444"))
-meta1$OriginalID %>% 
-  stringr::str_replace_all(stringr::fixed("SKBTI-"), "SKBTI") %>% 
-  stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
-  intersect(meta4$sample) %>% 
-  length()
+# meta4 <- paste0("raw/", study, "/metadata/NIHMS569508-supplement-02.xlsx") %>% 
+#   readxl::read_xlsx(sheet = "Table2I-keytaxa")
+# meta1$OriginalID %>% 
+#   stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
+#   intersect(meta4$sample)
+# meta1$OriginalID %>% 
+#   stringr::str_subset(stringr::fixed("444"))
+# meta1$OriginalID %>% 
+#   stringr::str_replace_all(stringr::fixed("SKBTI-"), "SKBTI") %>% 
+#   stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
+#   intersect(meta4$sample) %>% 
+#   length()
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2) %>% 
   dplyr::left_join(meta3)
@@ -35,7 +35,7 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "RISK",
-    study_accession = "RISK",
+    study_accession = NA_character_,
     PMID = "24629344",
     subject_accession = DonorID %>% as.character(),
     alternative_subject_accession = NA_character_,
@@ -48,10 +48,12 @@ meta_curated <- meta_raw %>%
       dplyr::recode("Stool" = "stool",
                     "Terminal Ileum" = "biopsy",
                     "Rectum" = "biopsy"),
+    sample_type_additional = NA_character_,
     body_site = Location %>% 
       dplyr::recode("Stool" = "stool",
                     "Terminal Ileum" = "TI",
                     "Rectum" = "rectum"),
+    body_site_additional = NA_character_,
     disease = Diagnosis %>% 
       dplyr::recode("CD" = "CD",
                     "Control" = "control"),
@@ -65,9 +67,13 @@ meta_curated <- meta_raw %>%
     B.cat = NA_character_,
     perianal = NA_character_,
     age = Age %>% as.numeric(),
-    age_c = NA_character_,
     age_at_diagnosis = NA_real_,
-    age_at_diagnosis_c = NA_character_,
+    age_at_diagnosis.cat = NA_character_,
+    race = Race %>% 
+      dplyr::recode("caucasian" = "white",
+                    "african" = "african_american",
+                    "other" = NA_character_,
+                    .missing = NA_character_),
     gender = Gender %>% 
       dplyr::recode("Male" = "m",
                     "Female" = "f"),
@@ -85,8 +91,8 @@ meta_curated <- meta_raw %>%
     immunosuppressants_supp = NA_character_,
     steroids = NA_character_,
     steroids_supp = NA_character_,
-    mesalamine = NA_character_,
-    mesalamine_supp = NA_character_,
+    mesalamine_5ASA = NA_character_,
+    mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = NA_character_,
@@ -100,6 +106,13 @@ meta_curated <- meta_raw %>%
     minimum_read_length_16S = NA_integer_,
     median_read_length_16S = NA_integer_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+# Can do this because new-onset cohort
+meta_curated <- meta_curated %>% 
+  dplyr::group_by(subject_accession) %>% 
+  dplyr::mutate(age_at_diagnosis = ifelse(any(!is.na(age)),
+                                          min(age, na.rm = TRUE),
+                                          NA)) %>% 
+  dplyr::ungroup()
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {

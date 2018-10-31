@@ -17,15 +17,14 @@ meta3 <- paste0("raw/", study,
                 "/metadata/MSH.txt") %>% 
   readr::read_delim(" ")
 meta_raw <- meta1 %>% 
-  dplyr::left_join(meta2, by = c("OriginalID" = "Sample ID")) %>% 
-  dplyr::left_join(meta3, by = c("OriginalID" = "DirkSampleID"))
+  dplyr::left_join(meta2, by = c("OriginalID" = "Sample ID"))
 
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "Pouchitis",
-    study_accession = "Pouchitis",
+    study_accession = NA_character_,
     PMID = "25887922",
-    subject_accession = DonorID %>% as.character(),
+    subject_accession = paste0(Family_ID, ":", Member_ID) %>% as.character(),
     alternative_subject_accession = NA_character_,
     sample_accession = OriginalID %>% as.character(),
     alternative_sample_accession = NA_character_,
@@ -42,92 +41,99 @@ meta_curated <- meta_raw %>%
                     "PPI" = "PPI",
                     "Sigmoid" = "sigmoid",
                     "TI" = "TI"),
-    disease = Diagnosis.y %>% 
+    body_site_additional = NA_character_,
+    disease = Diagnosis %>% # These mappings are generated based on Dirk's metadata sheet
       dplyr::recode("CD" = "CD",
                     "UC" = "UC",
                     "IC" = "IC",
+                    "MC" = "IC",
+                    "unconfirmed IBD" = "CD",
                     "FAP" = "FAP",
-                    "HC" = "control"),
-    control = Diagnosis.y %>% 
+                    "FAP/cdiff" = "FAP",
+                    "HC" = "control",
+                    "Unaffected" = "control",
+                    .missing = NA_character_),
+    control = disease %>% 
       dplyr::recode("CD" = NA_character_,
                     "UC" = NA_character_,
                     "IC" = NA_character_,
                     "FAP" = NA_character_,
-                    "HC" = "HC"),
-    IBD_subtype = diseasesubtype %>% 
-      dplyr::recode("iCD" = "iCD",
-                    "cCD" = "cCD",
-                    "CD" = "CD",
-                    "UC" = "UC",
-                    "IC" = "IC",
-                    "control" = NA_character_),
+                    "control" = "HC",
+                    .missing = NA_character_),
+    IBD_subtype = NA_character_,
     IBD_subtype_additional = NA_character_,
-    L.cat = disease_extent %>% 
+    L.cat = `Montreal Disease location` %>% 
       dplyr::recode("L1" = "L1",
                     "L2" = "L2",
                     "L3" = "L3",
-                    .default = NA_character_),
-    E.cat = disease_extent %>% 
+                    .default = NA_character_,
+                    .missing = NA_character_),
+    E.cat = `Montreal Disease location` %>% 
       dplyr::recode("E1" = "E1",
                     "E2" = "E2",
                     "E3" = "E3",
-                    .default = NA_character_),
-    B.cat = B.cat %>% 
-      dplyr::recode("B1" = "B1",
-                    "B2" = "B2",
-                    "B3" = "B3",
-                    .default = NA_character_),
-    perianal = perinanal %>% 
-      dplyr::recode("yes" = "y",
-                    "no" = "n",
-                    "unknown" = NA_character_),
+                    .default = NA_character_,
+                    .missing = NA_character_),
+    B.cat = Behaviour %>% 
+      dplyr::recode("1.0" = "B1",
+                    "2.0" = "B2",
+                    "3.0" = "B3",
+                    .default = NA_character_,
+                    .missing = NA_character_) %>% 
+      ifelse(disease == "CD", ., NA_character_),
+    perianal = NA_character_,
     age = Age %>% as.numeric(),
-    age_c = NA_character_,
     age_at_diagnosis = Ageof_Diag %>% 
       dplyr::recode("UK" = NA_character_) %>% 
       as.numeric(),
-    age_at_diagnosis_c = NA_character_,
-    gender = Gender.y %>% 
+    age_at_diagnosis.cat = NA_character_,
+    race = NA_character_,
+    gender = Gender %>% 
       dplyr::recode("Male" = "m",
                     "Female" = "f"),
-    BMI = NA_real_,
+    BMI = BMI %>% 
+      dplyr::recode("UK" = NA_character_) %>% 
+      as.numeric(),
     alcohol = NA_character_,
-    smoke = smoking %>% 
-      dplyr::recode("Current" = "current",
-                    "Former" = "former",
-                    "Never" = "never",
-                    "unknown" = NA_character_),
+    smoke = Smoking %>% 
+      dplyr::recode("Current Smoker" = "current",
+                    "Ex-Smoker" = "former",
+                    "Never Smoked" = "never",
+                    "UK" = NA_character_,
+                    .missing = NA_character_),
     site = `Collection Centre` %>% as.character(),
     calprotectin = NA_real_,
     PCDAI = NA_real_,
-    antibiotics = antibiotics %>% 
-      dplyr::recode("yes" = "y",
-                    "no" = "n",
-                    "unknown" = NA_character_),
+    antibiotics = Antibiotics %>% 
+      dplyr::recode("1.0" = "y",
+                    "0.0" = "n",
+                    "UK" = NA_character_,
+                    .missing = NA_character_),
     antibiotics_supp = NA_character_,
-    immunosuppressants = immunosup %>% 
-      dplyr::recode("no" = "n",
-                    "unknown" = NA_character_),
+    immunosuppressants = Immunosuppression %>% 
+      dplyr::recode("1.0" = "y",
+                    "0.0" = "n",
+                    "UK" = NA_character_,
+                    .missing = NA_character_),
     immunosuppressants_supp = NA_character_,
-    steroids = steroids %>% 
-      dplyr::recode("yes" = "y",
-                    "no" = "n",
-                    "unknown" = NA_character_),
+    steroids = Steroids %>% 
+      dplyr::recode("1.0" = "y",
+                    "0.0" = "n",
+                    "UK" = NA_character_,
+                    .missing = NA_character_),
     steroids_supp = NA_character_,
-    mesalamine = mesalamine %>% 
-      dplyr::recode("yes" = "y",
-                    "no" = "n",
-                    "unknown" = NA_character_),
-    mesalamine_supp = NA_character_,
-    biologics = biologics %>% 
-      dplyr::recode("yes" = "y",
-                    "no" = "n",
-                    "unknown" = NA_character_),
+    mesalamine_5ASA = Mesalamine %>% 
+      dplyr::recode("1.0" = "y",
+                    "0.0" = "n",
+                    "UK" = NA_character_,
+                    .missing = NA_character_),
+    mesalamine_5ASA_supp = NA_character_,
+    biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = NA_character_,
     time_point_supp = NA_character_,
-    family = NA_character_,
-    family_supp = NA_character_,
+    family = Family_ID,
+    family_supp = "Family ID",
     extraction_kit_16S = NA_character_,
     sequencing_platform_16S = NA_character_,
     number_reads_16S = NA_integer_,
@@ -137,6 +143,8 @@ meta_curated <- meta_raw %>%
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 meta_curated <- meta_curated[, template$col.name]
+test <- check_subject(meta_curated, "age_at_diagnosis")
+meta_curated %>% dplyr::filter(subject_accession %in% test$subject_accession[test$n_cat > 1]) %>% View
 if(check.template(meta_curated, template)) {
   cat("Metadata for", study,"processed and check successful!\n")
   write.table(meta_curated,

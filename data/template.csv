@@ -20,7 +20,7 @@ L.cat,character,non-unique,optional,L1|L2|L3|L4|L1+L2|L1+L3|L1+L4|L2+L3|L2+L4|L3
 E.cat,character,non-unique,optional,E1|E2|E3,y,Disease extent variable for UC
 B.cat,character,non-unique,optional,B1|B2|B3,y,Montreal categorization of CD
 perianal,character,non-unique,optional,y|n,y,Perinanal disease?
-age,numeric,non-unique,optional,*,n,Age (in yrs)
+age,numeric,non-unique,optional,*,n,Age at sample collection (in yrs)
 age_at_diagnosis,numeric,non-unique,optional,*,y,Age at diagnosis (in yrs)
 age_at_diagnosis.cat,character,non-unique,optional,A1|A2|A3,y,Sometimes Montreal classiciation of age at diagnosis is provided instead
 race,character,non-unique,optional,white|african_american|asian_pacific_islander|native_american|more_than_one|other,y,

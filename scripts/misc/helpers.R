@@ -42,9 +42,7 @@ check.template <- function(metadata, template) {
                          "subject_accession"), 
                  function(variable) {
                    metadata %>% 
-                     dplyr::group_by(subject_accession) %>% 
-                     dplyr::summarise(n_cat = dplyr::n_distinct(!!rlang::sym(variable),
-                                                                na.rm = TRUE)) %>% 
+                     check_subject(variable, na.rm = TRUE) %>% 
                      dplyr::mutate(is_unique = n_cat <= 1) %>% 
                      extract2("is_unique") %>% 
                      all()
@@ -56,7 +54,7 @@ check.template <- function(metadata, template) {
                          "subject_accession"), 
                  function(variable) {
                    metadata %>% 
-                     check_subject(variable) %>% 
+                     check_subject(variable, na.rm = FALSE) %>% 
                      dplyr::mutate(is_unique = n_cat == 1) %>% 
                      extract2("is_unique") %>% 
                      all()
@@ -79,20 +77,28 @@ check.template <- function(metadata, template) {
   return(TRUE)
 }
 
-check_subject <- function(metadata, variable) {
-  metadata %>% 
+check_subject <- function(metadata, variable, na.rm = TRUE) {
+  if(na.rm)
+    metadata %>% 
     dplyr::group_by(subject_accession) %>% 
-    dplyr::summarise(n_cat = dplyr::n_distinct(!!rlang::sym(variable),
-                                               na.rm = FALSE))
+    dplyr::summarise(n_cat = dplyr::n_distinct((!!rlang::sym(variable)),
+                                               na.rm = TRUE)) %>% 
+    return()
+  else
+    metadata %>% 
+    dplyr::group_by(subject_accession) %>% 
+    dplyr::summarise(n_cat = dplyr::n_distinct((!!rlang::sym(variable)),
+                                               na.rm = FALSE)) %>% 
+    return()
 }
 
 check_disease <- function(metadata, category) {
   if(category == "CD")
-    metadata$disease == "CD" | (is.na(metadata$L.cat) & is.na(metadata$B.cat))
+    (metadata$disease %in% c("CD", "IC", "FAP") | (is.na(metadata$L.cat) & is.na(metadata$B.cat))) %>% return()
   else if(category == "UC")
-    metadata$disease == "UC" | is.na(metadata$E.cat)
+    (metadata$disease %in% c("UC", "IC", "FAP") | is.na(metadata$E.cat)) %>% return()
   else if(category == "control")
-    metadata$disease == "control" | is.na(metadata$control)
+    (metadata$disease == "control" | is.na(metadata$control)) %>% return()
   else stop("Category must be one of CD, UC, or control!")
 }
 
