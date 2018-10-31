@@ -21,7 +21,7 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "HMP2",
-    study_accession = "HMP2",
+    study_accession = NA_character_,
     PMID = NA_character_,
     subject_accession = `Participant ID` %>% as.character(),
     alternative_subject_accession = NA_character_,
@@ -48,6 +48,7 @@ meta_curated <- meta_raw %>%
                     "Transverse colon" = "colon",
                     "Ascending (right-sided) colon" = "colon",
                     .missing = NA_character_),
+    body_site_additional = biopsy_location,
     disease = diagnosis %>% 
       dplyr::recode("CD" = "CD",
                     "UC" = "UC",
@@ -71,21 +72,26 @@ meta_curated <- meta_raw %>%
       dplyr::recode(.missing = NA_character_),
     perianal = NA_character_,
     age = consent_age %>% as.numeric(),
-    age_c = NA_character_,
     age_at_diagnosis = `Age at diagnosis` %>% as.numeric(),
-    age_at_diagnosis_c = NA_character_,
+    age_at_diagnosis.cat = NA_character_,
+    race = race %>% 
+      dplyr::recode("White" = "white",
+                    "Black or African American" = "african_american",
+                    "American Indian or Alaska Native" = "native_american",
+                    "More than one race" = "more_than_one",
+                    "Other" = NA_character_,
+                    .missing = NA_character_),
     gender = sex %>% 
       dplyr::recode("Male" = "m",
                     "Female" = "f",
                     .missing = NA_character_),
-    BMI = BMI %>% 
-      as.numeric(),
+    BMI = BMI %>% as.numeric(),
     alcohol = `Alcohol (beer, brandy, spirits, hard liquor, wine, aperitif, etc.)` %>% 
       dplyr::recode(.missing = NA_character_),
     smoke = `smoking status` %>% 
       dplyr::recode(.missing = NA_character_),
     site = site_name %>% as.character(),
-    calprotectin = NA_real_,
+    calprotectin = fecalcal %>% as.numeric,
     PCDAI = NA_real_,
     antibiotics = Antibiotics %>% 
       dplyr::recode("No" = "n",
@@ -97,8 +103,8 @@ meta_curated <- meta_raw %>%
     immunosuppressants_supp = NA_character_,
     steroids = NA_character_,
     steroids_supp = NA_character_,
-    mesalamine = NA_character_,
-    mesalamine_supp = NA_character_,
+    mesalamine_5ASA = NA_character_,
+    mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = week_num %>% as.character,

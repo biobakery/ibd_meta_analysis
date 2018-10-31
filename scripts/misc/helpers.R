@@ -37,7 +37,63 @@ check.template <- function(metadata, template) {
   if(!all(cond))
     stop("The following columns that requires specific values don't meet requirement!\n",
          paste(names(cond)[!cond], collapse = ", "))
+  # Check that subject-specific variables are consistent
+  cond <- sapply(setdiff(template$col.name[template$`subject specific?` == "y"], 
+                         "subject_accession"), 
+                 function(variable) {
+                   metadata %>% 
+                     dplyr::group_by(subject_accession) %>% 
+                     dplyr::summarise(n_cat = dplyr::n_distinct(!!rlang::sym(variable),
+                                                                na.rm = TRUE)) %>% 
+                     dplyr::mutate(is_unique = n_cat <= 1) %>% 
+                     extract2("is_unique") %>% 
+                     all()
+                 })
+  if(!all(cond))
+    stop("The following columns should be subject-specific!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  cond <- sapply(setdiff(template$col.name[template$`subject specific?` == "y"], 
+                         "subject_accession"), 
+                 function(variable) {
+                   metadata %>% 
+                     check_subject(variable) %>% 
+                     dplyr::mutate(is_unique = n_cat == 1) %>% 
+                     extract2("is_unique") %>% 
+                     all()
+                 })
+  if(!all(cond))
+    stop("The following subject-specific columns have uneven missingness pattern!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  
+  # Check that IBD and control subtypes are concordant with disease
+  cond <- metadata %>% 
+    dplyr::transmute(
+      CD = check_disease(metadata, "CD"),
+      UC = check_disease(metadata, "UC"),
+      control = check_disease(metadata, "control")
+    ) %>% 
+    apply(2, all)
+  if(!all(cond))
+    stop("The following disease categories have inconsistent subtype labelling!\n",
+         paste(names(cond)[!cond], collapse = ", "))
   return(TRUE)
+}
+
+check_subject <- function(metadata, variable) {
+  metadata %>% 
+    dplyr::group_by(subject_accession) %>% 
+    dplyr::summarise(n_cat = dplyr::n_distinct(!!rlang::sym(variable),
+                                               na.rm = FALSE))
+}
+
+check_disease <- function(metadata, category) {
+  if(category == "CD")
+    metadata$disease == "CD" | (is.na(metadata$L.cat) & is.na(metadata$B.cat))
+  else if(category == "UC")
+    metadata$disease == "UC" | is.na(metadata$E.cat)
+  else if(category == "control")
+    metadata$disease == "control" | is.na(metadata$control)
+  else stop("Category must be one of CD, UC, or control!")
 }
 
 # Helper functions for viewing spreadsheets
@@ -82,14 +138,14 @@ describe_var <- function(x) {
   else if (class_x == "character") {
     summary_x = unique(x) %>% 
       setdiff(NA) %>% {
-      c("n_unique",
-        length(.),
-        "na_perc", 
-        mean(is.na(x)) %>% 
-          round(digits = 4),
-        "unique_values",
-        .[1:min(length(.), 5)]) 
-    } %>% 
+        c("n_unique",
+          length(.),
+          "na_perc", 
+          mean(is.na(x)) %>% 
+            round(digits = 4),
+          "unique_values",
+          .[1:min(length(.), 5)]) 
+      } %>% 
       paste(collapse = " ")
   }
   else summary_x <- "others"

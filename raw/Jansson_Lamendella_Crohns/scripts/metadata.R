@@ -39,6 +39,7 @@ meta_curated <- meta_raw %>%
       dplyr::recode("UBERON:feces" = "stool"),
     body_site = body_site %>% 
       dplyr::recode("UBERON:feces" = "stool"),
+    body_site_additional = NA_character_,
     disease = diagnosis_full %>% 
       dplyr::recode("CD" = "CD",
                     "UC" = "UC",
@@ -46,11 +47,11 @@ meta_curated <- meta_raw %>%
                     "CC" = "control",
                     "LC" = "control"),
     control = diagnosis_full %>% 
-      dplyr::recode("CD" = "not applicable",
-                    "UC" = "not applicable",
-                    "HC" = "healthy",
-                    "CC" = "collagenous colitis",
-                    "LC" = "lymphocytic colitis"),
+      dplyr::recode("CD" = NA_character_,
+                    "UC" = NA_character_,
+                    "HC" = "HC",
+                    "CC" = "nonIBD",
+                    "LC" = "nonIBD"),
     IBD_subtype = ibd_subtype %>% 
       dplyr::recode("CCD" = "cCD", 
                     "ICD_nr" = "iCD",
@@ -89,9 +90,9 @@ meta_curated <- meta_raw %>%
                     "no" = "n",
                     "not applicable" = NA_character_),
     age = NA_real_,
-    age_c = NA_character_,
     age_at_diagnosis = NA_real_,
-    age_at_diagnosis_c = NA_character_,
+    age_at_diagnosis.cat = NA_character_,
+    race = "white", # All samples are Caucasian according to published manuscript
     gender = sex %>% 
       dplyr::recode("male" = "m",
                     "female" = "f"),
@@ -112,8 +113,8 @@ meta_curated <- meta_raw %>%
     immunosuppressants_supp = NA_character_,
     steroids = NA_character_,
     steroids_supp = NA_character_,
-    mesalamine = NA_character_,
-    mesalamine_supp = NA_character_,
+    mesalamine_5ASA = NA_character_,
+    mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = paste0(timepoint, 
@@ -129,6 +130,14 @@ meta_curated <- meta_raw %>%
     minimum_read_length_16S = NA_integer_,
     median_read_length_16S = NA_integer_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+
+# Two samples seem to have discordant IBD subtype info; set to missing/concordant
+meta_curated[meta_curated$sample_accession == "ERS1464142", 
+             c("IBD_subtype", "IBD_subtype_additional", "L.cat")] <- c("UC", NA_character_, NA_character_)
+meta_curated[meta_curated$sample_accession == "ERS1464315", 
+             c("IBD_subtype", "IBD_subtype_additional", "L.cat")] <- c("cCD", "not applicable", "L2")
+# One sample is missing E cat somehow
+meta_curated[meta_curated$sample_accession == "ERS1464091", "E.cat"] <- "E3"
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {

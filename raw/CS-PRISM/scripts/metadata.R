@@ -141,9 +141,9 @@ meta_curated <- meta_raw %>%
       dplyr::recode("L3 (Ileocolon)" = "L3",
                     "L2 (Colon)" = "L2", 
                     "L1 (TI)" = "L1",
-                    "L1 + L4 (TI and Upper GI)" = "L1 + L4",
-                    "L3 + L4 (Ileocolon and Upper GI)" = "L3 + L4",
-                    "L2 + L4 (Colon and upper GI)" = "L2 + L4",
+                    "L1 + L4 (TI and Upper GI)" = "L1+L4",
+                    "L3 + L4 (Ileocolon and Upper GI)" = "L3+L4",
+                    "L2 + L4 (Colon and upper GI)" = "L2+L4",
                     "L4 (Upper GI)" = "L4",
                     .missing = NA_character_),
     E.cat = `Extent (E)` %>% 
@@ -169,11 +169,12 @@ meta_curated <- meta_raw %>%
                     .missing = NA_character_),
     age = `Age at sample collection (year)` %>% as.numeric(),
     age_at_diagnosis = `Age at Diagnosis` %>% as.numeric(),
+    age_at_diagnosis.cat = NA_character_,
     race = Race %>% 
       dplyr::recode("White" = "white",
                     "Asian" = "asian_pacific_islander",                           
                     "Black or African American" = "african_american",
-                    "More than one race" = "more_than_one_race",
+                    "More than one race" = "more_than_one",
                     "Other" = NA_character_,
                     "American Indian or Alaska Native" = "native_american",
                     "Refused" = NA_character_,
@@ -311,16 +312,28 @@ meta_curated <- meta_raw %>%
                     "Asacol (mesalamine),",
                     ""),
              ifelse(`Pentasa (mesalamine)` %in% "Currently taking",
-                    "Uceris (Budesonide ER),",
+                    "Pentasa (mesalamine),",
                     ""),
-             ifelse(`SoluMedrol (Medrol)` %in% "Currently taking",
-                    "SoluMedrol (Medrol),",
+             ifelse(`Lialda (mesalamine)` %in% "Currently taking",
+                    "Lialda (mesalamine),",
                     ""),
-             ifelse(`IV steroids` %in% "Currently taking",
-                    "IV steroids,",
+             ifelse(`Apriso (mesalamine)` %in% "Currently taking",
+                    "Apriso (mesalamine),",
                     ""),
-             ifelse(`Cortenemas, Cortifoam, Proctofoam` %in% "Currently taking",
-                    "Cortenemas, Cortifoam, Proctofoam,",
+             ifelse(`Colazal (balasalizide)` %in% "Currently taking",
+                    "Colazal (balasalizide),",
+                    ""),
+             ifelse(`Sulfazalazine (Azulfidine)` %in% "Currently taking",
+                    "Sulfazalazine (Azulfidine),",
+                    ""),
+             ifelse(`Dipentum (olsalazine)` %in% "Currently taking",
+                    "Dipentum (olsalazine),",
+                    ""),
+             ifelse(`Rowasa enemas (mesalamine enemas)` %in% "Currently taking",
+                    "Rowasa enemas (mesalamine enemas),",
+                    ""),
+             ifelse(`Canasa suppositories (mesalamine suppositories)` %in% "Currently taking",
+                    "Canasa suppositories (mesalamine suppositories),",
                     "")) %>% 
       stringr::str_replace_all(",$", ""),
     biologics = NA_character_,
@@ -335,7 +348,11 @@ meta_curated <- meta_raw %>%
     number_bases_16S = NA_integer_,
     minimum_read_length_16S = NA_integer_,
     median_read_length_16S = NA_integer_
-  ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+  ) %>% dplyr::select(template$col.name %>% dplyr::one_of()) %>% 
+  dplyr::filter(!(is.na(alternative_sample_accession) | duplicated(alternative_sample_accession)))
+
+meta_curated_test <- meta_curated %>% 
+  dplyr::mutate(UC = check_disease(meta_curated, "UC"))
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {

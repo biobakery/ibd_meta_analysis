@@ -54,6 +54,7 @@ meta_curated <- meta_raw %>%
     perianal = NA_character_,
     age = Age %>% as.numeric(),
     age_at_diagnosis = NA_real_,
+    age_at_diagnosis.cat = NA_character_,
     race = NA_character_,
     gender = Gender %>% 
       dplyr::recode(Male = "m",
@@ -82,8 +83,8 @@ meta_curated <- meta_raw %>%
       #               No = "n"),
       # Set to NA unless confirmed what it means
     steroids_supp = NA_character_,
-    mesalamine = NA_character_,
-    mesalamine_supp = NA_character_,
+    mesalamine_5ASA = NA_character_,
+    mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
     time_point = NA_character_,
