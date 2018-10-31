@@ -64,7 +64,7 @@ check.template <- function(metadata, template) {
   if(!all(cond))
     stop("The following subject-specific columns have uneven missingness pattern!\n",
          paste(names(cond)[!cond], collapse = ", "))
-  
+
   # Check that IBD and control subtypes are concordant with disease
   cond <- metadata %>% 
     dplyr::transmute(
