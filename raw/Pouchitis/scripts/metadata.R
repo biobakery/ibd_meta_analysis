@@ -13,9 +13,6 @@ meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>%
 meta2 <- paste0("raw/", study, 
                 "/metadata/Sample List Broad_pheno7_6_2012.xlsx") %>% 
   readxl::read_excel()
-meta3 <- paste0("raw/", study, 
-                "/metadata/MSH.txt") %>% 
-  readr::read_delim(" ")
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2, by = c("OriginalID" = "Sample ID"))
 
@@ -47,7 +44,7 @@ meta_curated <- meta_raw %>%
                     "UC" = "UC",
                     "IC" = "IC",
                     "MC" = "IC",
-                    "unconfirmed IBD" = "CD",
+                    "unconfirmed IBD" = NA_character_,
                     "FAP" = "FAP",
                     "FAP/cdiff" = "FAP",
                     "HC" = "control",
