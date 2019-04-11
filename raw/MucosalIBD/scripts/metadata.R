@@ -2,17 +2,39 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "MucosalIBD"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt",
+                         col_types = 
+                           readr::cols_only(GID = readr::col_character(),
+                                            Project = readr::col_character(),
+                                            DonorID = readr::col_character(),
+                                            OriginalID = readr::col_character(),
+                                            SequencingRun = readr::col_character(),
+                                            Technology = readr::col_character())) %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
-  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
+  dplyr::select(-Technology)
 meta2 <- paste0("raw/", study, "/metadata/",
                 study, ".csv") %>% 
-  readr::read_csv() %>% 
+  readr::read_csv(col_types = 
+                    readr::cols(
+                      .default = readr::col_character(),
+                      `Ids/Id/0/_is_primary` = readr::col_double(),
+                      `Description/Organism/_taxonomy_id` = readr::col_double(),
+                      `Attributes/Attribute/2/__text` = readr::col_date(format = ""),
+                      `Attributes/Attribute/5/__text` = readr::col_double(),
+                      `Attributes/Attribute/9/__text` = readr::col_double(),
+                      `Links/Link/__text` = readr::col_double(),
+                      `Status/_when` = readr::col_datetime(format = ""),
+                      `_publication_date` = readr::col_datetime(format = ""),
+                      `_last_update` = readr::col_datetime(format = ""),
+                      `_submission_date` = readr::col_datetime(format = ""),
+                      `_id` = readr::col_double()
+                    )) %>% 
   dplyr::mutate(
     subject_accession = `Attributes/Attribute/13/__text`,
     sample_accession = `Ids/Id/0/__text`,

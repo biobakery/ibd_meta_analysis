@@ -2,20 +2,28 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "BIDMC-FMT"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt",
+                         col_types = 
+                           readr::cols_only(GID = readr::col_character(),
+                                            Project = readr::col_character(),
+                                            DonorID = readr::col_character(),
+                                            OriginalID = readr::col_character(),
+                                            SequencingRun = readr::col_character(),
+                                            Technology = readr::col_character())) %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
-  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
+  dplyr::select(-Technology)
 meta2 <- paste0("raw/", study, "/metadata/",
                 study, "_common.txt") %>% 
-  readr::read_tsv()
+  readr::read_tsv(col_types = "ccccccd")
 meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
-  readr::read_tsv()
+  readr::read_tsv(col_types = "ccccccc")
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2, by = c("Project", "DonorID", "OriginalID")) %>% 
   dplyr::left_join(meta3, by = c("Project", "DonorID", "OriginalID"))

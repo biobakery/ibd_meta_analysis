@@ -2,14 +2,22 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "Pouchitis"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt",
+                         col_types = 
+                           readr::cols_only(GID = readr::col_character(),
+                                            Project = readr::col_character(),
+                                            DonorID = readr::col_character(),
+                                            OriginalID = readr::col_character(),
+                                            SequencingRun = readr::col_character(),
+                                            Technology = readr::col_character())) %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
-  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
+  dplyr::select(-Technology)
 meta2 <- paste0("raw/", study, 
                 "/metadata/Sample List Broad_pheno7_6_2012.xlsx") %>% 
   readxl::read_excel()
@@ -83,7 +91,11 @@ meta_curated <- meta_raw %>%
     age_at_diagnosis = Ageof_Diag %>% 
       dplyr::recode("UK" = NA_character_) %>% 
       as.numeric(),
-    age_at_diagnosis.cat = NA_character_,
+    age_at_diagnosis.cat =   
+      dplyr::case_when(age_at_diagnosis <= 16 ~ "A1",
+                       age_at_diagnosis <= 40 ~ "A2",
+                       age_at_diagnosis > 40 ~ "A3",
+                       is.na(age_at_diagnosis) ~ NA_character_),
     race = NA_character_,
     gender = Gender %>% 
       dplyr::recode("Male" = "m",
@@ -141,7 +153,9 @@ meta_curated <- meta_raw %>%
 
 meta_curated <- meta_curated[, template$col.name]
 test <- check_subject(meta_curated, "age_at_diagnosis")
-meta_curated %>% dplyr::filter(subject_accession %in% test$subject_accession[test$n_cat > 1]) %>% View
+meta_curated %>% 
+  dplyr::filter(subject_accession %in% test$subject_accession[test$n_cat > 1]) %>% 
+  nrow()
 if(check.template(meta_curated, template)) {
   cat("Metadata for", study,"processed and check successful!\n")
   write.table(meta_curated,

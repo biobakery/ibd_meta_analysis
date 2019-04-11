@@ -2,7 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "PROTECT"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/SupplementTable6.xlsx"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -45,8 +46,8 @@ meta_curated <- meta_raw %>%
     B.cat = NA_character_,
     perianal = NA_character_,
     age = age %>% as.numeric,
-    age_at_diagnosis = age %>% as.numeric, # can do this because early onset
-    age_at_diagnosis.cat = NA_character_,
+    age_at_diagnosis = NA_real_,
+    age_at_diagnosis.cat =   NA_character_,
     race = race %>% 
       dplyr::recode("White" = "white",
                     "Black" = "african_american",
@@ -101,6 +102,19 @@ meta_curated <- meta_raw %>%
     minimum_read_length_16S = NA_integer_,
     median_read_length_16S = NA_integer_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+
+# Can do this because new-onset cohort
+meta_curated <- meta_curated %>% 
+  dplyr::group_by(subject_accession) %>% 
+  dplyr::mutate(age_at_diagnosis = ifelse(any(!is.na(age)),
+                                          min(age, na.rm = TRUE),
+                                          NA),
+                age_at_diagnosis.cat =   
+                  dplyr::case_when(age_at_diagnosis <= 16 ~ "A1",
+                                   age_at_diagnosis <= 40 ~ "A2",
+                                   age_at_diagnosis > 40 ~ "A3",
+                                   is.na(age_at_diagnosis) ~ NA_character_)) %>% 
+  dplyr::ungroup()
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {

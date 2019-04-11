@@ -2,14 +2,22 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "CS-PRISM"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt",
+                         col_types = 
+                           readr::cols_only(GID = readr::col_character(),
+                                            Project = readr::col_character(),
+                                            DonorID = readr::col_character(),
+                                            OriginalID = readr::col_character(),
+                                            SequencingRun = readr::col_character(),
+                                            Technology = readr::col_character())) %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
-  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
+  dplyr::select(-Technology)
 meta2 <- paste0("raw/", study, "/metadata/", "consolidatedWT_IBD_metadata.xlsx") %>% 
   readxl::read_xlsx(sheet = "Data") %>% 
   dplyr::mutate(Included = Included == 35)
@@ -173,7 +181,11 @@ meta_curated <- meta_raw %>%
     age_at_diagnosis = ifelse(`Age at Diagnosis` < 999,
                               `Age at Diagnosis`,
                               NA_real_),
-    age_at_diagnosis.cat = NA_character_,
+    age_at_diagnosis.cat =   
+      dplyr::case_when(age_at_diagnosis <= 16 ~ "A1",
+                       age_at_diagnosis <= 40 ~ "A2",
+                       age_at_diagnosis > 40 ~ "A3",
+                       is.na(age_at_diagnosis) ~ NA_character_),
     race = Race %>% 
       dplyr::recode("White" = "white",
                     "Asian" = "asian_pacific_islander",                           

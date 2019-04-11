@@ -2,7 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "Herfarth_CCFA_Microbiome_3B_combined"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -10,19 +11,50 @@ dir.create(paste0("processed/", study, "/metadata/"),
 meta1 <- paste0("raw/", 
                 study, 
                 "/metadata/2538_20180418-110548.txt") %>% 
-  readr::read_tsv() # downloaded from Qiita
-meta1 %>% 
-  dplyr::filter(host_scientific_name == "Homo sapiens")
+  readr::read_tsv(col_types =
+                    readr::cols(
+                      .default = readr::col_character(),
+                      dna_extracted = readr::col_logical(),
+                      elevation = readr::col_double(),
+                      host_taxid = readr::col_double(),
+                      latitude = readr::col_double(),
+                      longitude = readr::col_double(),
+                      physical_specimen_remaining = readr::col_logical(),
+                      public = readr::col_logical(),
+                      qiita_study_id = readr::col_double(),
+                      taxon_id = readr::col_double()
+                    )) # downloaded from Qiita
+# meta1 %>% 
+#   dplyr::filter(host_scientific_name == "Homo sapiens")
 meta2 <- paste0("raw/", 
                 study, 
                 "/metadata/ebi_sample_accessions_study_2538.tsv") %>% 
-  readr::read_tsv() # downloaded from Qiita
+  readr::read_tsv(col_types = "cc") # downloaded from Qiita
 meta3 <- paste0("raw/", 
                 study, 
                 "/metadata/PRJEB23009.txt") %>% 
-  readr::read_tsv() # downloaded from EBI
+  readr::read_tsv(col_types =
+                    readr::cols(
+                      study_accession = readr::col_character(),
+                      sample_accession = readr::col_character(),
+                      secondary_sample_accession = readr::col_character(),
+                      experiment_accession = readr::col_character(),
+                      run_accession = readr::col_character(),
+                      tax_id = readr::col_double(),
+                      scientific_name = readr::col_character(),
+                      instrument_model = readr::col_character(),
+                      library_layout = readr::col_character(),
+                      fastq_ftp = readr::col_character(),
+                      fastq_galaxy = readr::col_character(),
+                      submitted_ftp = readr::col_character(),
+                      submitted_galaxy = readr::col_character(),
+                      sra_ftp = readr::col_character(),
+                      sra_galaxy = readr::col_character(),
+                      cram_index_ftp = readr::col_logical(),
+                      cram_index_galaxy = readr::col_logical()
+                    )) # downloaded from EBI
 meta_raw <- meta1 %>% 
-  dplyr::left_join(meta2) %>% 
+  dplyr::left_join(meta2, by = "sample_name") %>% 
   dplyr::left_join(meta3, by = c("sample_accession" = "secondary_sample_accession"))
 meta_raw <- meta_raw %>% 
   dplyr::filter(sample_accession != "None",

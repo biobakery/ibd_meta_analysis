@@ -2,35 +2,32 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "RISK"
-template <- readr::read_csv("data/template.csv")
+template <- readr::read_csv("data/template.csv",
+                            col_types = "ccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
-meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt") %>% 
+meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt",
+                         col_types = 
+                           readr::cols_only(GID = readr::col_character(),
+                                            Project = readr::col_character(),
+                                            DonorID = readr::col_character(),
+                                            OriginalID = readr::col_character(),
+                                            SequencingRun = readr::col_character(),
+                                            Technology = readr::col_character())) %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
-  dplyr::select(GID, Project, DonorID, OriginalID, SequencingRun)
+  dplyr::select(-Technology)
 meta2 <- paste0("raw/", study, "/metadata/",
                 study, "_common.txt") %>% 
-  readr::read_tsv()
+  readr::read_tsv(col_types = "ccccccd")
 meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
-  readr::read_tsv()
-# meta4 <- paste0("raw/", study, "/metadata/NIHMS569508-supplement-02.xlsx") %>% 
-#   readxl::read_xlsx(sheet = "Table2I-keytaxa")
-# meta1$OriginalID %>% 
-#   stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
-#   intersect(meta4$sample)
-# meta1$OriginalID %>% 
-#   stringr::str_subset(stringr::fixed("444"))
-# meta1$OriginalID %>% 
-#   stringr::str_replace_all(stringr::fixed("SKBTI-"), "SKBTI") %>% 
-#   stringr::str_replace_all(stringr::fixed("_"), ".") %>% 
-#   intersect(meta4$sample) %>% 
-#   length()
+  readr::read_tsv(col_types = "ccccdcc")
+
 meta_raw <- meta1 %>% 
-  dplyr::left_join(meta2) %>% 
-  dplyr::left_join(meta3)
+  dplyr::left_join(meta2, by = c("OriginalID", "DonorID", "Project")) %>% 
+  dplyr::left_join(meta3, by = c("OriginalID", "DonorID", "Project"))
 
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
@@ -111,7 +108,12 @@ meta_curated <- meta_curated %>%
   dplyr::group_by(subject_accession) %>% 
   dplyr::mutate(age_at_diagnosis = ifelse(any(!is.na(age)),
                                           min(age, na.rm = TRUE),
-                                          NA)) %>% 
+                                          NA),
+                age_at_diagnosis.cat =   
+                  dplyr::case_when(age_at_diagnosis <= 16 ~ "A1",
+                                   age_at_diagnosis <= 40 ~ "A2",
+                                   age_at_diagnosis > 40 ~ "A3",
+                                   is.na(age_at_diagnosis) ~ NA_character_)) %>% 
   dplyr::ungroup()
 
 meta_curated <- meta_curated[, template$col.name]
