@@ -59,7 +59,7 @@ meta_raw <- meta1 %>%
 # Most of the matchings between 16S sample IDs are correct
 unmatched <- meta_raw %>% 
   dplyr::filter(
-    `Collaborator Sample ID__1` %>% 
+    `Collaborator Sample ID...4` %>% 
       is_in(meta3_long1$`sample ID`) %>% 
       not,
     GID %>% 
@@ -71,7 +71,7 @@ nrow(unmatched)
 
 # First match based on 16S ID samples
 meta_raw_sampleID <- meta_raw %>% 
-  dplyr::inner_join(meta3_long1, by = c("Collaborator Sample ID__1" = "sample ID")) %>% 
+  dplyr::inner_join(meta3_long1, by = c("Collaborator Sample ID...4" = "sample ID")) %>% 
   dplyr::select(-`16S G`, - `16S G2`)
 meta_raw_GID <- meta_raw %>% 
   dplyr::filter(!(GID %in% meta_raw_sampleID$GID)) %>% 
@@ -100,7 +100,7 @@ meta_curated <- meta_raw %>%
     subject_accession = DonorID %>% as.character(),
     alternative_subject_accession = SubjectID2 %>% as.character(),
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = `Collaborator Sample ID__1` %>% as.character(),
+    alternative_sample_accession = `Collaborator Sample ID...4` %>% as.character(),
     batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
@@ -109,7 +109,7 @@ meta_curated <- meta_raw %>%
                     .default = "biopsy",
                     .missing = NA_character_),
     body_site_additional = dplyr::case_when(
-      `sample collection ID` == "stool" ~ "stool",
+      `sample collection ID` == "stool" ~ NA_character_,
       `sample collection ID` %in% c("flora1 (NI)", "flora2 (NI)", "flora3 (NI)") ~  
         `Location of first non-inflamed tissue`,
       `sample collection ID` %in% c("flora5 (Inf)", "flora6 (Inf)", "flora7 (Inf)") ~
@@ -119,13 +119,12 @@ meta_curated <- meta_raw %>%
       TRUE ~ NA_character_),
     body_site = body_site_additional %>% dplyr::recode(
       "Ascending (right-sided) colon" = "colon",
-      "Cecum" = "cecum", 
+      "Cecum" = "colon", 
       "Descending (left-sided) colon" = "colon",
-      "J-Pouch" = "pouch",
-      "Neo-ileum" = "neo-ileum",
+      "J-Pouch" = "ileum",
+      "Neo-ileum" = "ileum",
       "Rectum" = "rectum",
-      "Sigmoid Colon" = "sigmoid",
-      "stool" = "stool",
+      "Sigmoid Colon" = "colon",
       "Terminal ileum" = "ileum",
       "Transverse colon" = "colon",
       .missing = NA_character_),
@@ -386,3 +385,4 @@ if(check.template(meta_curated, template)) {
               sep = "\t",
               row.names = F)
 }
+

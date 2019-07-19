@@ -44,9 +44,11 @@ meta_curated <- meta_raw %>%
       dplyr::recode("Stool" = "stool",
                     .missing = NA_character_),
     body_site = Location %>% 
-      dplyr::recode("Stool" = "stool",
+      dplyr::recode("Stool" = NA_character_,
                     .missing = NA_character_),
-    body_site_additional = NA_character_,
+    body_site_additional = Location %>% 
+      dplyr::recode("Stool" = NA_character_,
+                    .missing = NA_character_),
     disease = Diagnosis %>% 
       dplyr::recode("CD" = "CD",
                     .missing = NA_character_),

@@ -10,7 +10,7 @@ batch,character,non-unique,optional,*,n,Batch indicator variable
 sample_accession_16S,character,unique,optional,*,n,16S sample ID (should match 16S read IDs)
 sample_accession_WGS,character,unique,optional,*,n,WGS sample ID (should match WGS read IDs)
 sample_type,character,non-unique,optional,biopsy|stool,n,
-body_site,character,non-unique,optional,TI|ileum|cecum|colon|sigmoid|rectum|pouch|PPI|neo-ileum|stool,n,
+body_site,character,non-unique,optional,ileum|colon|rectum,n,
 body_site_additional,character,non-unique,optional,*,n,Additional body site information. Only available if further differentiation is available
 disease,character,non-unique,optional,CD|UC|IC|FAP|control,y,
 control,character,non-unique,optional,HC|nonIBD,y,Additional control classes

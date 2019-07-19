@@ -74,8 +74,9 @@ meta_curated <- meta_raw %>%
     sample_type = body_site %>% 
       dplyr::recode("UBERON:feces" = "stool"),
     body_site = body_site %>% 
-      dplyr::recode("UBERON:feces" = "stool"),
-    body_site_additional = NA_character_,
+      dplyr::recode("UBERON:feces" = NA_character_),
+    body_site_additional = body_site %>% 
+      dplyr::recode("UBERON:feces" = NA_character_),
     disease = ibd %>% 
       dplyr::recode("Crohns" = "CD",
                     "Control" = "control"),

@@ -57,7 +57,7 @@ meta_raw <- meta1 %>%
 # Most of the matchings between 16S sample IDs are correct
 unmatched <- meta_raw %>% 
   dplyr::filter(
-    `Collaborator Sample ID__1` %>% 
+    `Collaborator Sample ID...4` %>% 
       is_in(meta3_long1$`sample ID`) %>% 
       not,
     GID %>% 
@@ -68,7 +68,7 @@ unmatched <- meta_raw %>%
 nrow(unmatched)
 
 meta_raw_sampleID <- meta_raw %>% 
-  dplyr::inner_join(meta3_long1, by = c("Collaborator Sample ID__1" = "sample ID")) %>% 
+  dplyr::inner_join(meta3_long1, by = c("Collaborator Sample ID...4" = "sample ID")) %>% 
   dplyr::select(-`16S G`, - `16S G2`)
 meta_raw_GID <- meta_raw %>% 
   dplyr::filter(!(GID %in% meta_raw_sampleID$GID)) %>% 
@@ -97,7 +97,7 @@ meta_curated <- meta_raw %>%
     subject_accession = DonorID %>% as.character(),
     alternative_subject_accession = SubjectID2 %>% as.character(),
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = `Collaborator Sample ID__1` %>% as.character(),
+    alternative_sample_accession = `Collaborator Sample ID...4` %>% as.character(),
     batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
@@ -105,10 +105,10 @@ meta_curated <- meta_raw %>%
       dplyr::recode("stool" = "stool",
                     .missing = NA_character_),
     body_site_additional = `sample collection ID` %>% 
-      dplyr::recode("stool" = "stool",
+      dplyr::recode("stool" = NA_character_,
                     .missing = NA_character_),
-    body_site = body_site_additional %>% dplyr::recode(
-      "stool" = "stool",
+    body_site = `sample collection ID` %>% dplyr::recode(
+      "stool" = NA_character_,
       .missing = NA_character_),
     disease = Diagnosis %>% 
       dplyr::recode("Crohn's Disease" = "CD",

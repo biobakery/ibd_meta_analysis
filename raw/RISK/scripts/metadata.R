@@ -18,16 +18,27 @@ meta1 <- readr::read_tsv("data/metadata_raivo/sample2project_common.txt",
                                             Technology = readr::col_character())) %>% 
   dplyr::filter(Project == study, Technology == "16S") %>% 
   dplyr::select(-Technology)
+
 meta2 <- paste0("raw/", study, "/metadata/",
                 study, "_common.txt") %>% 
   readr::read_tsv(col_types = "ccccccd")
+
 meta3 <- paste0("raw/", study, "/metadata/",
                 study, "_special.txt") %>% 
   readr::read_tsv(col_types = "ccccdcc")
 
+meta4 <- paste0("raw/", study, "/metadata/RISK_metadata.tsv") %>% 
+  readr::read_tsv(col_names = FALSE,
+                  col_types = readr::cols(.default = readr::col_character())) %>% 
+  t() %>% 
+  set_colnames(.[1, ]) %>% 
+  {tibble::as_tibble(.[-1, ])} %>% 
+  dplyr::rename(Diagnosis_followup = Diagnosis)
+
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2, by = c("OriginalID", "DonorID", "Project")) %>% 
-  dplyr::left_join(meta3, by = c("OriginalID", "DonorID", "Project"))
+  dplyr::left_join(meta3, by = c("OriginalID", "DonorID", "Project")) %>% 
+  dplyr::left_join(meta4, by = c("GID" = "ID"))
 
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
@@ -47,10 +58,13 @@ meta_curated <- meta_raw %>%
                     "Rectum" = "biopsy"),
     sample_type_additional = NA_character_,
     body_site = Location %>% 
-      dplyr::recode("Stool" = "stool",
-                    "Terminal Ileum" = "TI",
+      dplyr::recode("Stool" = NA_character_,
+                    "Terminal Ileum" = "ileum",
                     "Rectum" = "rectum"),
-    body_site_additional = NA_character_,
+    body_site_additional = Location %>% 
+      dplyr::recode("Stool" = NA_character_,
+                    "Terminal Ileum" = "Terminal ileum",
+                    "Rectum" = "rectum"),
     disease = Diagnosis %>% 
       dplyr::recode("CD" = "CD",
                     "Control" = "control"),
@@ -61,7 +75,11 @@ meta_curated <- meta_raw %>%
     IBD_subtype_additional = NA_character_,
     L.cat = NA_character_,
     E.cat = NA_character_,
-    B.cat = NA_character_,
+    B.cat = dplyr::case_when(
+      disease == "CD" & STRCTR_STATUS == "B2" ~ "B2",
+      disease == "CD" & INTPEN_STATUS == "B3" ~ "B3",
+      disease == "CD" ~ "B1",
+      TRUE ~ NA_character_),
     perianal = NA_character_,
     age = Age %>% as.numeric(),
     age_at_diagnosis = NA_real_,

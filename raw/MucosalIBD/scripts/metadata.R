@@ -68,8 +68,9 @@ meta_curated <- meta_raw %>%
     sample_type = body_site %>% 
       dplyr::recode("epithelium of ileum" = "biopsy"),
     body_site = body_site %>% 
-      dplyr::recode("epithelium of ileum" = "TI"),
-    body_site_additional = NA_character_,
+      dplyr::recode("epithelium of ileum" = "ileum"),
+    body_site_additional = body_site %>% 
+      dplyr::recode("epithelium of ileum" = "Terminal ileum"),
     disease = disease %>% 
       dplyr::recode("Crohn's disease" = "CD",
                     "Not IBD" = "control",

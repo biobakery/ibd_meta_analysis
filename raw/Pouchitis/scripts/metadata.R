@@ -42,11 +42,11 @@ meta_curated <- meta_raw %>%
                     "Sigmoid" = "biopsy",
                     "TI" = "biopsy"),
     body_site = `Sample Location` %>% 
-      dplyr::recode("Pouch" = "pouch",
-                    "PPI" = "PPI",
-                    "Sigmoid" = "sigmoid",
-                    "TI" = "TI"),
-    body_site_additional = NA_character_,
+      dplyr::recode("Pouch" = "ileum",
+                    "PPI" = "ileum",
+                    "Sigmoid" = "colon",
+                    "TI" = "ileum"),
+    body_site_additional = `Sample Location`,
     disease = Diagnosis %>% # These mappings are generated based on Dirk's metadata sheet
       dplyr::recode("CD" = "CD",
                     "UC" = "UC",

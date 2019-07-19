@@ -65,7 +65,7 @@ meta_curated <- meta_raw %>%
     body_site = biopsy_location %>% 
       dplyr::recode("Rectum" = "rectum",
                     "Ileum" = "ileum",
-                    "Cecum" = "cecum",
+                    "Cecum" = "colon",
                     "Descending (left-sided) colon" = "colon",
                     "Sigmoid Colon" = "colon",
                     "Transverse colon" = "colon",

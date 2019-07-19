@@ -30,9 +30,12 @@ meta_curated <- meta_raw %>%
                     .missing = NA_character_),
     body_site = sampleType %>% 
       dplyr::recode("biopsy" = "rectum",
-                    "stool" = "stool",
+                    "stool" = NA_character_,
                     .missing = NA_character_),
-    body_site_additional = NA_character_,
+    body_site_additional = sampleType %>% 
+      dplyr::recode("biopsy" = "rectum",
+                    "stool" = NA_character_,
+                    .missing = NA_character_),
     disease = "UC",
     control = NA_character_,
     IBD_subtype = NA_character_,
