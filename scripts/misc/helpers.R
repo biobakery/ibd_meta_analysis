@@ -1,6 +1,5 @@
 # Check that data frame is consistent with template
 check.template <- function(metadata, template) {
-  template <- readr::read_csv("data/template.csv", col_types = readr::cols())
   # Check that column names agree
   cond <- colnames(metadata) == template$col.name
   if(!all(cond)) 
@@ -100,6 +99,10 @@ check_disease <- function(metadata, category) {
   else if(category == "control")
     (metadata$disease == "control" | is.na(metadata$control)) %>% return()
   else stop("Category must be one of CD, UC, or control!")
+}
+
+create_timepoint <- function(x) {
+  as.numeric(forcats::as_factor(x))
 }
 
 # Helper functions for viewing spreadsheets

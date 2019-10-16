@@ -2,8 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "RISK"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -43,27 +43,28 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "RISK",
-    study_accession = NA_character_,
     PMID = "24629344",
     subject_accession = DonorID %>% as.character(),
-    alternative_subject_accession = NA_character_,
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = NA_character_,
-    batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = NA_character_,
+    study_accession_db = NA_character_,
+    subject_accession_db = NA_character_,
+    sample_accession_db = NA_character_,
+    batch = SequencingRun %>% as.character(),
     sample_type = Location %>% 
       dplyr::recode("Stool" = "stool",
                     "Terminal Ileum" = "biopsy",
                     "Rectum" = "biopsy"),
-    sample_type_additional = NA_character_,
     body_site = Location %>% 
       dplyr::recode("Stool" = NA_character_,
                     "Terminal Ileum" = "ileum",
                     "Rectum" = "rectum"),
     body_site_additional = Location %>% 
       dplyr::recode("Stool" = NA_character_,
-                    "Terminal Ileum" = "Terminal ileum",
+                    "Terminal Ileum" = "terminal ileum",
                     "Rectum" = "rectum"),
     disease = Diagnosis %>% 
       dplyr::recode("CD" = "CD",
@@ -71,8 +72,6 @@ meta_curated <- meta_raw %>%
     control = Diagnosis %>% 
       dplyr::recode("CD" = NA_character_,
                     "Control" = "nonIBD"),
-    IBD_subtype = NA_character_,
-    IBD_subtype_additional = NA_character_,
     L.cat = NA_character_,
     E.cat = NA_character_,
     B.cat = dplyr::case_when(
@@ -95,9 +94,10 @@ meta_curated <- meta_raw %>%
     BMI = NA_real_,
     alcohol = NA_character_,
     smoke = NA_character_,
-    site = "North America",
     calprotectin = NA_real_,
     PCDAI = PCDAI %>% as.numeric(),
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = Antibiotics %>% 
       dplyr::recode("Yes" = "y",
              "No" = "n"),
@@ -110,16 +110,11 @@ meta_curated <- meta_raw %>%
     mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = NA_character_,
+    time_point = 1,
     time_point_supp = NA_character_,
     family = NA_character_,
     family_supp = NA_character_,
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 # Can do this because new-onset cohort
 meta_curated <- meta_curated %>% 

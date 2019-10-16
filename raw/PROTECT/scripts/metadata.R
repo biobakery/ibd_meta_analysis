@@ -2,28 +2,30 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "PROTECT"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
-dir.create(paste0("processed/", study, "/metadata/SupplementTable6.xlsx"),
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
+dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
 
 meta_raw <- paste0("raw/", 
                    study, 
                    "/metadata/SupplementTable6.xlsx") %>% 
-  readxl::read_xlsx(sheet = "SupplementTable6", skip = 2) # downloaded from Qiita
+  readxl::read_xlsx(sheet = "SupplementTable6", skip = 2)
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = study %>% as.character(),
-    study_accession = NA_character_,
     PMID = "30308161",
     subject_accession = SubjectID %>% as.character(),
-    alternative_subject_accession = NA_character_,
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = NA_character_,
-    batch = NA_character_,
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = NA_character_,
+    study_accession_db = NA_character_,
+    subject_accession_db = NA_character_,
+    sample_accession_db = NA_character_,
+    batch = NA_character_,
     sample_type = sampleType %>% 
       dplyr::recode("biopsy" = "biopsy",
                     "stool" = "stool",
@@ -38,8 +40,6 @@ meta_curated <- meta_raw %>%
                     .missing = NA_character_),
     disease = "UC",
     control = NA_character_,
-    IBD_subtype = NA_character_,
-    IBD_subtype_additional = NA_character_,
     L.cat = NA_character_,
     E.cat = MONTREAL_ORD %>% 
       dplyr::recode("Extensive or Pancolitis or Unasessable" = "E3",
@@ -66,11 +66,12 @@ meta_curated <- meta_raw %>%
     BMI = NA_real_,
     alcohol = NA_character_,
     smoke = NA_character_,
-    site = "US_and_Canada",
     calprotectin = CALPROTECTIN_WKall %>% 
       dplyr::recode("NA" = NA_character_) %>% 
       as.numeric(),
     PCDAI = NA_real_,
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = dplyr::case_when(
       antibiotics == "No" ~ "n",
       !is.na(antibiotics_time_to) & antibiotics_time_to <= 27  ~ "y",
@@ -94,16 +95,11 @@ meta_curated <- meta_raw %>%
                                   NA_character_),
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = collectionWeek %>% as.character(),
-    time_point_supp = "collection week",
+    time_point = NA_integer_,
+    time_point_supp = collectionWeek %>% as.character(),
     family = NA_character_,
     family_supp = NA_character_,
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 # Can do this because new-onset cohort
@@ -118,6 +114,16 @@ meta_curated <- meta_curated %>%
                                    age_at_diagnosis > 40 ~ "A3",
                                    is.na(age_at_diagnosis) ~ NA_character_)) %>% 
   dplyr::ungroup()
+
+# format time point into 1, 2, 3, ...
+meta_curated <- meta_curated %>% 
+  dplyr::mutate(time_point = as.numeric(time_point_supp)) %>% 
+  dplyr::arrange(time_point) %>% 
+  dplyr::group_by(subject_accession) %>% 
+  dplyr::mutate(time_point = create_timepoint(time_point)) %>% 
+  dplyr::ungroup()
+
+
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {
