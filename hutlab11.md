@@ -2,6 +2,7 @@ Currently available data are RISK (cross-sectional) and PROTECT (longitudinal).
 Using RISK as example:
 
 * Raw sequences: `http://huttenhower.sph.harvard.edu/ibd_meta_analysis_RISK_raw_16s/file_name`.
+
   * As an example: `http://huttenhower.sph.harvard.edu/ibd_meta_analysis_RISK_raw_16s/G53154_R2_001.fastq`.
 
   * Full lists provided separately.
