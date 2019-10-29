@@ -8,9 +8,6 @@
 /data/16s/*
 /raw/*/16s/*
 /processed/*/16s/*
-/processed/*/16s/*.biom
-/processed/*/16s/*.tsv
-/processed/*/16s/*.txt
+!processed/*/16s/all_samples_taxonomy_closed_reference.tsv
 /test/*
 /test/scripts/*
-/*/.anadama/*
