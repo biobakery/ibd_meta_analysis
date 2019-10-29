@@ -3,11 +3,13 @@
 .RData
 .Ruserdata
 *.Rproj
-.Rproj
 .DS_Store
-/data/16s/*
+/data/
 /raw/*/16s/*
+/*/jansson_twins_ibd/
+/*/Kashyap_FMT_longitudinal/
+/*/NL-IBD/
+/*/STiNKi
 /processed/*/16s/*
 !processed/*/16s/all_samples_taxonomy_closed_reference.tsv
-/test/*
-/test/scripts/*
+/test/
