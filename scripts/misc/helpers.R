@@ -102,6 +102,7 @@ check_disease <- function(metadata, category) {
 }
 
 create_timepoint <- function(x) {
+  x <- as.character(x)
   as.numeric(forcats::as_factor(x))
 }
 

@@ -95,7 +95,7 @@ meta_curated <- meta_raw %>%
                                   NA_character_),
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = NA_integer_,
+    time_point = NA_real_,
     time_point_supp = collectionWeek %>% as.character(),
     family = NA_character_,
     family_supp = NA_character_,

@@ -2,8 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "CS-PRISM"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -50,7 +50,6 @@ meta3_long2 <- meta3 %>%
   dplyr::filter(!is.na(`16S sample ID`)) # Then, match based on GID if sample ID is not available
 # Fortunately these samples are all stool samples
 
-
 # sanity check
 meta_raw <- meta1 %>% 
   dplyr::left_join(meta2, by = c("GID" = "16S G#")) %>% 
@@ -95,15 +94,17 @@ meta_raw <- rbind(meta_raw_sampleID, meta_raw_GID)
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "CS-PRISM",
-    study_accession = NA_character_,
     PMID = "23013615",
     subject_accession = DonorID %>% as.character(),
-    alternative_subject_accession = SubjectID2 %>% as.character(),
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = `Collaborator Sample ID...4` %>% as.character(),
-    batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = NA_character_,
+    study_accession_db = NA_character_,
+    subject_accession_db = NA_character_,
+    sample_accession_db = NA_character_,
+    batch = SequencingRun %>% as.character(),
     sample_type = `sample collection ID` %>% 
       dplyr::recode("stool" = "stool",
                     .default = "biopsy",
@@ -142,8 +143,6 @@ meta_curated <- meta_raw %>%
                     "Disease control (Unspecified ileitis)" = "nonIBD",
                     .default = NA_character_,
                     .missing = NA_character_),
-    IBD_subtype = NA_character_,
-    IBD_subtype_additional = NA_character_,
     L.cat = `Location (L) prior to first surgery` %>% 
       dplyr::recode("L3 (Ileocolon)" = "L3",
                     "L2 (Colon)" = "L2", 
@@ -211,11 +210,12 @@ meta_curated <- meta_raw %>%
                     "Former smoker" = "former",
                     "Unknown/unspecified" = NA_character_,
                     .missing = NA_character_),
-    site = "MGH",
     calprotectin = `Fecal Calprotectin Results` %>% 
       stringr::str_replace_all(stringr::fixed("ug/g"), "") %>% 
       as.numeric,
     PCDAI = NA_real_,
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = dplyr::case_when(
       `Flagyl (Metronidazole)` %in% "Currently taking" |
         `Cipro (Ciprofloxacin)` %in% "Currently taking" |
@@ -353,22 +353,13 @@ meta_curated <- meta_raw %>%
       stringr::str_replace_all(",$", ""),
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = NA_character_,
+    time_point = 1,
     time_point_supp = NA_character_,
     family = NA_character_,
     family_supp = NA_character_,
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
-
-# Four duplicate labelling of alternative sample accession
-meta_curated[meta_curated$sample_accession %in% c("G89732","G89735","G23975","G23992"), 
-             "alternative_sample_accession"] <- NA_character_
 
 # Some CD patients have E category??
 # meta_curated_test <- meta_curated %>% 

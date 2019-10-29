@@ -2,8 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "Pouchitis"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -27,15 +27,17 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "Pouchitis",
-    study_accession = NA_character_,
     PMID = "25887922",
     subject_accession = paste0(Family_ID, ":", Member_ID) %>% as.character(),
-    alternative_subject_accession = NA_character_,
     sample_accession = OriginalID %>% as.character(),
-    alternative_sample_accession = NA_character_,
-    batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = NA_character_,
+    study_accession_db = NA_character_,
+    subject_accession_db = NA_character_,
+    sample_accession_db = NA_character_,
+    batch = SequencingRun %>% as.character(),
     sample_type = `Sample Location` %>% 
       dplyr::recode("Pouch" = "biopsy",
                     "PPI" = "biopsy",
@@ -65,8 +67,6 @@ meta_curated <- meta_raw %>%
                     "FAP" = NA_character_,
                     "control" = "HC",
                     .missing = NA_character_),
-    IBD_subtype = NA_character_,
-    IBD_subtype_additional = NA_character_,
     L.cat = `Montreal Disease location` %>% 
       dplyr::recode("L1" = "L1",
                     "L2" = "L2",
@@ -113,6 +113,8 @@ meta_curated <- meta_raw %>%
     site = `Collection Centre` %>% as.character(),
     calprotectin = NA_real_,
     PCDAI = NA_real_,
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = Antibiotics %>% 
       dplyr::recode("1.0" = "y",
                     "0.0" = "n",
@@ -139,16 +141,11 @@ meta_curated <- meta_raw %>%
     mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = NA_character_,
+    time_point = 1,
     time_point_supp = NA_character_,
     family = Family_ID,
     family_supp = "Family ID",
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 meta_curated <- meta_curated[, template$col.name]

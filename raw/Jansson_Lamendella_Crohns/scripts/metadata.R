@@ -2,8 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "Jansson_Lamendella_Crohns"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -58,15 +58,17 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "Jansson_Lamendella_Crohns",
-    study_accession = "PRJEB18471",
     PMID = "28191884",
     subject_accession = host_subject_id %>% as.character(),
-    alternative_subject_accession = NA_character_,
     sample_accession = sample_accession %>% as.character(),
-    alternative_sample_accession = sample_accession.y %>% as.character(),
-    batch = NA_character_,
     sample_accession_16S = run_accession %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = "ENA",
+    study_accession_db = "PRJEB18471",
+    subject_accession_db = NA_character_,
+    sample_accession_db = sample_accession.y %>% as.character(),
+    batch = NA_character_,
     sample_type = body_site %>% 
       dplyr::recode("UBERON:feces" = "stool"),
     body_site = body_site %>% 
@@ -85,22 +87,6 @@ meta_curated <- meta_raw %>%
                     "HC" = "HC",
                     "CC" = "nonIBD",
                     "LC" = "nonIBD"),
-    IBD_subtype = ibd_subtype %>% 
-      dplyr::recode("CCD" = "cCD", 
-                    "ICD_nr" = "iCD",
-                    "ICD_r" = "iCD",
-                    "UC" = "UC",
-                    "LC" = NA_character_,
-                    "CC" = NA_character_,
-                    "HC" = NA_character_),
-    IBD_subtype_additional = ibd_subtype %>% 
-      dplyr::recode("CCD" = "not applicable", 
-                    "ICD_nr" = "iCD non resection",
-                    "ICD_r" = "iCD resection",
-                    "UC" = NA_character_,
-                    "LC" = NA_character_,
-                    "CC" = NA_character_,
-                    "HC" = NA_character_),
     L.cat = cd_location %>% 
       dplyr::recode("Ileal (L1)" = "L1",
                     "Colonic (L2)" = "L2",
@@ -134,12 +120,13 @@ meta_curated <- meta_raw %>%
       as.numeric(),
     alcohol = NA_character_,
     smoke = NA_character_,
-    site = geo_loc_name %>% as.character(),
     calprotectin = calprotectin %>% 
       dplyr::recode("not applicable" = NA_character_,
                     "not collected" = NA_character_) %>% 
       as.numeric(),
     PCDAI = NA_real_,
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = NA_character_,
     antibiotics_supp = NA_character_,
     immunosuppressants = NA_character_,
@@ -150,18 +137,11 @@ meta_curated <- meta_raw %>%
     mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = paste0(timepoint, 
-                        ":",
-                        collection_timestamp),
-    time_point_supp = "timepoint:collection_timestamp",
+    time_point = timepoint,
+    time_point_supp = collection_timestamp,
     family = NA_character_,
     family_supp = NA_character_,
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 # Two samples seem to have discordant IBD subtype info; set to missing/concordant

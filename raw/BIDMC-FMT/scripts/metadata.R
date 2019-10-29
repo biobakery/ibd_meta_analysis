@@ -2,8 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "BIDMC-FMT"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -31,15 +31,19 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "BIDMC-FMT",
+    PMID = "27542133",
     study_accession = NA_character_,
     PMID = NA_character_,
     subject_accession = DonorID %>% as.character(),
-    alternative_subject_accession = NA_character_,
     sample_accession = GID %>% as.character(),
-    alternative_sample_accession = NA_character_,
-    batch = SequencingRun %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = NA_character_,
+    study_accession_db = NA_character_,
+    subject_accession_db = NA_character_,
+    sample_accession_db = NA_character_,
+    batch = SequencingRun %>% as.character(),
     sample_type = Location %>% 
       dplyr::recode("Stool" = "stool",
                     .missing = NA_character_),
@@ -53,8 +57,6 @@ meta_curated <- meta_raw %>%
       dplyr::recode("CD" = "CD",
                     .missing = NA_character_),
     control = NA_character_,
-    IBD_subtype = NA_character_,
-    IBD_subtype_additional = NA_character_,
     L.cat = DiseaseLocation %>% 
       dplyr::recode("L2" = "L2",
                     "L3" = "L3",
@@ -72,41 +74,28 @@ meta_curated <- meta_raw %>%
     BMI = NA_real_,
     alcohol = NA_character_,
     smoke = NA_character_,
-    site = "BIDMC",
     calprotectin = NA_real_,
     PCDAI = NA_real_,
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = NA_character_,
-    # Antibiotics %>% 
-    # dplyr::recode(Yes = "y",
-    #               No = "n"),
     # Set to NA unless confirmed what it means
     antibiotics_supp = NA_character_,
     immunosuppressants = NA_character_,
-    # Immunosuppressants %>% 
-    # dplyr::recode(Yes = "y",
-    #               No = "n"),
     # Set to NA unless confirmed what it means
     immunosuppressants_supp = NA_character_,
+    # Set to NA unless confirmed what it means
     steroids = NA_character_,
-      # Steroids %>% 
-      # dplyr::recode(Yes = "y",
-      #               No = "n"),
-      # Set to NA unless confirmed what it means
     steroids_supp = NA_character_,
     mesalamine_5ASA = NA_character_,
     mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = NA_character_,
+    time_point = 1,
     time_point_supp = NA_character_,
     family = NA_character_,
     family_supp = NA_character_,
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
 
 meta_curated <- meta_curated[, template$col.name]

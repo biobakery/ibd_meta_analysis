@@ -2,8 +2,8 @@ rm(list = ls())
 library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "HMP2"
-template <- readr::read_csv("data/template.csv",
-                            col_types = "ccccccc")
+template <- readr::read_csv("data/template_new.csv",
+                            col_types = "ccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)
@@ -44,15 +44,17 @@ meta_raw <- meta1 %>%
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "HMP2",
-    study_accession = NA_character_,
-    PMID = NA_character_,
+    PMID = "31142855",
     subject_accession = `Participant ID` %>% as.character(),
-    alternative_subject_accession = NA_character_,
     sample_accession = Samples.16s %>% as.character(),
-    alternative_sample_accession = Project %>% as.character(),
-    batch = NA_character_,
     sample_accession_16S = Samples.16s %>% as.character(),
     sample_accession_WGS = NA_character_,
+    sample_accession_MBX = NA_character_,
+    database = "ibdmdb",
+    study_accession_db = "HMP2",
+    subject_accession_db = NA_character_,
+    sample_accession_db = Samples.16s %>% as.character(),
+    batch = NA_character_,
     sample_type = biopsy_location %>% 
       dplyr::recode("Rectum" = "biopsy",
                     "Ileum" = "biopsy",
@@ -80,8 +82,6 @@ meta_curated <- meta_raw %>%
       dplyr::recode("CD" = NA_character_,
                     "UC" = NA_character_,
                     "nonIBD" = "nonIBD"),
-    IBD_subtype = NA_character_,
-    IBD_subtype_additional = NA_character_,
     L.cat = baseline_montreal_location %>% 
       dplyr::recode("L1" = "L1",
                     "L1+L4" = "L1+L4",
@@ -117,9 +117,10 @@ meta_curated <- meta_raw %>%
       dplyr::recode(.missing = NA_character_),
     smoke = `smoking status` %>% 
       dplyr::recode(.missing = NA_character_),
-    site = site_name %>% as.character(),
     calprotectin = fecalcal %>% as.numeric,
     PCDAI = NA_real_,
+    HBI = NA_real_,
+    SCCAI = NA_real_,
     antibiotics = Antibiotics %>% 
       dplyr::recode("No" = "n",
                     .missing = NA_character_),
@@ -134,17 +135,20 @@ meta_curated <- meta_raw %>%
     mesalamine_5ASA_supp = NA_character_,
     biologics = NA_character_,
     biologics_supp = NA_character_,
-    time_point = week_num %>% as.character,
-    time_point_supp = "unit: week numbers",
+    time_point = NA_real_,
+    time_point_supp = week_num %>% as.character,
     family = NA_character_,
     family_supp = NA_character_,
-    extraction_kit_16S = NA_character_,
-    sequencing_platform_16S = NA_character_,
-    number_reads_16S = NA_integer_,
-    number_bases_16S = NA_integer_,
-    minimum_read_length_16S = NA_integer_,
-    median_read_length_16S = NA_integer_
+    method_MBX = NA_character_
   ) %>% dplyr::select(template$col.name %>% dplyr::one_of())
+
+# format time point into 1, 2, 3, ...
+meta_curated <- meta_curated %>% 
+  dplyr::mutate(time_point = as.numeric(time_point_supp)) %>% 
+  dplyr::arrange(time_point) %>% 
+  dplyr::group_by(subject_accession) %>% 
+  dplyr::mutate(time_point = create_timepoint(time_point)) %>% 
+  dplyr::ungroup()
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {
