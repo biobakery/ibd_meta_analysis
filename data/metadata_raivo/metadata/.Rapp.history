@@ -1,2 +1,0 @@
-load("/Users/kolde/Raivo/Projects/IBD_metaanalysis/metadata/sample2project_common.rds")
-readRDS("/Users/kolde/Raivo/Projects/IBD_metaanalysis/metadata/sample2project_common.rds")
