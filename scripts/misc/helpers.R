@@ -1,13 +1,13 @@
 # Check that data frame is consistent with template
 check.template <- function(metadata, template) {
   # Check that column names agree
-  cond <- colnames(metadata) == template$col.name
+  cond <- colnames(metadata) == template$`proper name`
   if(!all(cond)) 
     stop("The following columns and template don't match!\n",
-         paste(template$col.name[!cond], collapse = ", "))
+         paste(template$`proper name`[!cond], collapse = ", "))
   # Check that column availability agrees
   cond <- metadata %>% 
-    dplyr::select(dplyr::one_of(template$col.name[template$requiredness == "required"])) %>% 
+    dplyr::select(dplyr::one_of(template$`proper name`[template$requiredness == "required"])) %>% 
     sapply(function(x) all(!is.na(x)))
   if(!all(cond))
     stop("The following columns that requires full availability don't meet requirements!\n",
@@ -19,15 +19,15 @@ check.template <- function(metadata, template) {
          paste(names(cond)[!cond], collaspse = ", "))
   # Check that uniqueness agrees
   cond <- metadata %>% 
-    dplyr::select(dplyr::one_of(template$col.name[template$uniqueness == "unique"])) %>% 
+    dplyr::select(dplyr::one_of(template$`proper name`[template$uniqueness == "unique"])) %>% 
     sapply(function(x) !anyDuplicated(x[!is.na(x)])) 
   if(!all(cond))
     stop("The following columns that require uniqueness don't meet requirement!\n",
          paste(names(cond)[!cond], collaspse = ", "))
   # Check that (for categorical variables) variable content agrees
-  cond <- sapply(template$col.name[template$allowedvalues != "*"], 
+  cond <- sapply(template$`proper name`[template$allowedvalues != "*"], 
                  function(variable) {
-                   values.allowed <- template$allowedvalues[template$col.name == variable] %>% 
+                   values.allowed <- template$allowedvalues[template$`proper name` == variable] %>% 
                      strsplit("|", fixed = TRUE) %>% 
                      magrittr::extract2(1)
                    values <- metadata %>% magrittr::extract2(variable)
@@ -37,7 +37,7 @@ check.template <- function(metadata, template) {
     stop("The following columns that requires specific values don't meet requirement!\n",
          paste(names(cond)[!cond], collapse = ", "))
   # Check that subject-specific variables are consistent
-  cond <- sapply(setdiff(template$col.name[template$`subject specific?` == "y"], 
+  cond <- sapply(setdiff(template$`proper name`[template$`subject specific?` == "y"], 
                          "subject_accession"), 
                  function(variable) {
                    metadata %>% 
@@ -49,7 +49,7 @@ check.template <- function(metadata, template) {
   if(!all(cond))
     stop("The following columns should be subject-specific!\n",
          paste(names(cond)[!cond], collapse = ", "))
-  cond <- sapply(setdiff(template$col.name[template$`subject specific?` == "y"], 
+  cond <- sapply(setdiff(template$`proper name`[template$`subject specific?` == "y"], 
                          "subject_accession"), 
                  function(variable) {
                    metadata %>% 
@@ -181,3 +181,110 @@ describe <- function(df) {
 #     tibble::as_data_frame(x = .)
 #   return(t_df)
 # }
+
+# Check that data frame is consistent with template
+check.template.recoded <- function(metadata, template) {
+  # Check that column names agree
+  cond <- colnames(metadata) == template$`proper name`
+  if(!all(cond)) 
+    stop("The following columns and template don't match!\n",
+         paste(template$`proper name`[!cond], collapse = ", "))
+  # Check that column availability agrees
+  cond <- metadata %>% 
+    dplyr::select(dplyr::one_of(template$`proper name`[template$requiredness == "required"])) %>% 
+    sapply(function(x) all(!is.na(x)))
+  if(!all(cond))
+    stop("The following columns that requires full availability don't meet requirements!\n",
+         paste(names(cond)[!cond], collaspse = ", "))
+  # Check that column types agree
+  cond <- sapply(meta_curated, class) == template$var.class
+  if(!all(cond))
+    stop("The following column types and template don't match!\n",
+         paste(names(cond)[!cond], collaspse = ", "))
+  # Check that uniqueness agrees
+  cond <- metadata %>% 
+    dplyr::select(dplyr::one_of(template$`proper name`[template$uniqueness == "unique"])) %>% 
+    sapply(function(x) !anyDuplicated(x[!is.na(x)])) 
+  if(!all(cond))
+    stop("The following columns that require uniqueness don't meet requirement!\n",
+         paste(names(cond)[!cond], collaspse = ", "))
+  # Check that (for categorical variables) variable content agrees
+  cond <- sapply(template$`proper name`[template$allowedvalues != "*"], 
+                 function(variable) {
+                   values.allowed <- template$`proper value`[template$`proper name` == variable] %>% 
+                     strsplit("|", fixed = TRUE) %>% 
+                     magrittr::extract2(1)
+                   values <- metadata %>% magrittr::extract2(variable)
+                   return(all(values[!is.na(values)] %in% values.allowed))
+                 })
+  if(!all(cond))
+    stop("The following columns that requires specific values don't meet requirement!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  # Check that subject-specific variables are consistent
+  cond <- sapply(setdiff(template$`proper name`[template$`subject specific?` == "y"], 
+                         "Subject accession"), 
+                 function(variable) {
+                   metadata %>% 
+                     check_subject_recoded(variable, na.rm = TRUE) %>% 
+                     dplyr::mutate(is_unique = n_cat <= 1) %>% 
+                     extract2("is_unique") %>% 
+                     all()
+                 })
+  if(!all(cond))
+    stop("The following columns should be subject-specific!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  cond <- sapply(setdiff(template$`proper name`[template$`subject specific?` == "y"], 
+                         "Subject accession"), 
+                 function(variable) {
+                   metadata %>% 
+                     check_subject_recoded(variable, na.rm = FALSE) %>% 
+                     dplyr::mutate(is_unique = n_cat == 1) %>% 
+                     extract2("is_unique") %>% 
+                     all()
+                 })
+  if(!all(cond))
+    stop("The following subject-specific columns have uneven missingness pattern!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  
+  # Check that IBD and control subtypes are concordant with disease
+  cond <- metadata %>% 
+    dplyr::transmute(
+      CD = check_disease_recoded(metadata, "CD"),
+      UC = check_disease_recoded(metadata, "UC"),
+      control = check_disease_recoded(metadata, "Control")
+    ) %>% 
+    apply(2, all)
+  if(!all(cond))
+    stop("The following disease categories have inconsistent subtype labelling!\n",
+         paste(names(cond)[!cond], collapse = ", "))
+  return(TRUE)
+}
+
+check_subject_recoded <- function(metadata, variable, na.rm = TRUE) {
+  if(na.rm)
+    metadata %>% 
+    dplyr::group_by(`Subject accession`) %>% 
+    dplyr::summarise(n_cat = dplyr::n_distinct((!!rlang::sym(variable)),
+                                               na.rm = TRUE)) %>% 
+    return()
+  else
+    metadata %>% 
+    dplyr::group_by(`Subject accession`) %>% 
+    dplyr::summarise(n_cat = dplyr::n_distinct((!!rlang::sym(variable)),
+                                               na.rm = FALSE)) %>% 
+    return()
+}
+
+check_disease_recoded <- function(metadata, category) {
+  if(category == "CD")
+    (metadata$Disease %in% c("CD", "IC", "FAP") | 
+       (is.na(metadata$`Montreal L classification`) & 
+          is.na(metadata$`Montreal B classification`))) %>% return()
+  else if(category == "UC")
+    (metadata$Disease %in% c("UC", "IC", "FAP") | 
+       is.na(metadata$`Montreal E classification`)) %>% return()
+  else if(category == "Control")
+    (metadata$Disease == "Control" | 
+       is.na(metadata$Control)) %>% return()
+  else stop("Category must be one of CD, UC, or control!")
+}
