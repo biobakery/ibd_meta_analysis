@@ -3,7 +3,7 @@ library(magrittr)
 source("scripts/misc/helpers.R")
 study <- "HMP2"
 template <- readr::read_csv("data/template_new.csv",
-                            col_types = "ccccccccccc")
+                            col_types = "ccccccccccccc")
 dir.create(paste0("processed/", study, "/metadata/"),
            recursive = TRUE,
            showWarnings = FALSE)

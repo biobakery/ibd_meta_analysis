@@ -1,73 +1,73 @@
-comment,OSDF schema file,OSDF property,Proposed OSDF location,col.name,var.class,uniqueness,requiredness,allowedvalues,subject specific?,description
-,study.json,name,,dataset_name,character,non-unique,required,*,n,Name of study
-make an array,,,study.json,PMID,character,non-unique,optional,*,n,
-,subject.json,rand_subject_id,,subject_accession,character,non-unique,required,*,y,Subject accession on platform where obtained
-,sample.json,int_sample_id,sample.json,sample_accession,character,unique,required,*,n,
-,16s_dna_prep.json,srs_id or prep_id,,sample_accession_16S,character,unique,optional,*,n,16S sample ID (should match 16S read IDs)
-,wgs_dna_prep.json,srs_id or prep_id,,sample_accession_WGS,character,unique,optional,*,n,WGS sample ID (should match WGS read IDs)
-,,,,sample_accession_MBX,character,unique,optional,*,n,metabolomics sample ID
-,,,,database,character,non-unique,optional,*,n,"Some studies are downloaded from databases. For these the study, subject, and sample accession as in the original db should be provided"
-,study.json,srp_id,,study_accession_db,character,non-unique,optional,*,n,
-,,,subject.json,subject_accession_db,character,non-unique,optional,*,y,Alternative subject accession ID
-,,,sample.json,sample_accession_db,character,unique,optional,*,n,Alternative sample accession ID
-,,,sample.json,batch,character,non-unique,optional,*,n,Batch indicator variable
-"Need more info. stool is body_product. biopsy is not a body_product, but more of a product of a medical procedure.",sample > mixs.json,body_product,"Add ""biopsy"" and ""stool"" to choices already listed in sample_attr > sample_type (""BC1D"", ""BCKD"", ""BRCD"", ""BS1D"", ""BSTD"", ""MCHD"", ""MCKD"", ""MCVD"", ""MRCD"", ""MV1D"", ""MV1R"", ""BCKX"", ""MCKX"", ""MP1P"", ""MVAX"", ""MVAL"")",sample_type,character,non-unique,optional,biopsy|stool|serum|urine,n,
+comment,OSDF schema file,OSDF property,Proposed OSDF location,col.name,var.class,uniqueness,requiredness,allowedvalues,subject specific?,description,proper name,proper value
+,study.json,name,,dataset_name,character,non-unique,required,*,n,Name of study,Dataset name,
+make an array,,,study.json,PMID,character,non-unique,optional,*,n,,PMID,
+,subject.json,rand_subject_id,,subject_accession,character,non-unique,required,*,y,Subject accession on platform where obtained,Subject accession,
+,sample.json,int_sample_id,sample.json,sample_accession,character,unique,required,*,n,,Sample accession,
+,16s_dna_prep.json,srs_id or prep_id,,sample_accession_16S,character,unique,optional,*,n,16S sample ID (should match 16S read IDs),Sample accession (16S),
+,wgs_dna_prep.json,srs_id or prep_id,,sample_accession_WGS,character,unique,optional,*,n,WGS sample ID (should match WGS read IDs),Sample accession (WGS),
+,,,,sample_accession_MBX,character,unique,optional,*,n,metabolomics sample ID,Sample accession (MBX),
+,,,,database,character,non-unique,optional,*,n,"Some studies are downloaded from databases. For these the study, subject, and sample accession as in the original db should be provided",Database,
+,study.json,srp_id,,study_accession_db,character,non-unique,optional,*,n,,Study accession (database),
+,,,subject.json,subject_accession_db,character,non-unique,optional,*,y,Alternative subject accession ID,Subject accession (database),
+,,,sample.json,sample_accession_db,character,unique,optional,*,n,Alternative sample accession ID,Sample accession (database),
+,,,sample.json,batch,character,non-unique,optional,*,n,Batch indicator variable,Batch,
+"Need more info. stool is body_product. biopsy is not a body_product, but more of a product of a medical procedure.",sample > mixs.json,body_product,"Add ""biopsy"" and ""stool"" to choices already listed in sample_attr > sample_type (""BC1D"", ""BCKD"", ""BRCD"", ""BS1D"", ""BSTD"", ""MCHD"", ""MCKD"", ""MCVD"", ""MRCD"", ""MV1D"", ""MV1R"", ""BCKX"", ""MCKX"", ""MP1P"", ""MVAX"", ""MVAL"")",sample_type,character,non-unique,optional,biopsy|stool|serum|urine,n,,Sample type,Biopsy|Stool|Serum|Urine
 "OSDF has 'rectal' instead of 'rectum'. Should be changed. 'rectal' is not a body part/site.
-OSDF type is enum vs 'string' listed in F13",sample.json > body_sites.json,sample.body_site,,body_site,character,non-unique,optional,ileum|colon|rectum,n,
-,,,sample.json,body_site_additional,character,non-unique,optional,*,n,Additional body site information. Only available if further differentiation is available
+OSDF type is enum vs 'string' listed in F13",sample.json > body_sites.json,sample.body_site,,body_site,character,non-unique,optional,ileum|colon|rectum,n,,Body site,Ileum|Colon|Rectum
+,,,sample.json,body_site_additional,character,non-unique,optional,*,n,Additional body site information. Only available if further differentiation is available,Body site (original encoding),
 ,,,"subject_attr.json. 
-Add 'disease' field with choices",disease,character,non-unique,optional,CD|UC|IC|FAP|control,y,
+Add 'disease' field with choices",disease,character,non-unique,optional,CD|UC|IC|FAP|control,y,,Disease,CD|UC|IC|FAP|Control
 ,,,"subject_attr.json. 
-Add 'control' field with choices",control,character,non-unique,optional,HC|nonIBD,y,Additional control classes
+Add 'control' field with choices",control,character,non-unique,optional,HC|nonIBD,y,Additional control classes,Control,HC|Non-IBD
 ,,,"montreal_location (Montreal Classification)
-add to visit_attr > clinical_patient.json",L.cat,character,non-unique,optional,L1|L2|L3|L4|L1+L2|L1+L3|L1+L4|L2+L3|L2+L4|L3+L4,y,Disease extent variable for CD
+add to visit_attr > clinical_patient.json",L.cat,character,non-unique,optional,L1|L2|L3|L4|L1+L2|L1+L3|L1+L4|L2+L3|L2+L4|L3+L4,y,Disease extent variable for CD,Montreal L classification,L1|L2|L3|L4|L1+L2|L1+L3|L1+L4|L2+L3|L2+L4|L3+L4
 ,,,"montreal_subgroup (Montreal Classification)
-add to visit_attr > clinicial_patient.json",E.cat,character,non-unique,optional,E1|E2|E3,y,Disease extent variable for UC
+add to visit_attr > clinicial_patient.json",E.cat,character,non-unique,optional,E1|E2|E3,y,Disease extent variable for UC,Montreal E classification,E1|E2|E3
 ,,,"montreal_behavior (Montreal Classification)
-add to visit_attr > cliinical_patient.json",B.cat,character,non-unique,optional,B1|B2|B3,y,Montreal categorization of CD
+add to visit_attr > cliinical_patient.json",B.cat,character,non-unique,optional,B1|B2|B3,y,Montreal categorization of CD,Montreal B classification,B1|B2|B3
 ,,,"subject_attr.json
 Create property 'perianal' (boolean) - ""Does patient have perianal disease? Yes/No""
-""perianal_duration"" (days, weeks, years?)",perianal,character,non-unique,optional,y|n,y,Perinanal disease?
+""perianal_duration"" (days, weeks, years?)",perianal,character,non-unique,optional,y|n,y,Perinanal disease?,Perianal,Yes|No
 ,"visit_attr >
-clinical_patient.json",age,,age,numeric,non-unique,optional,*,n,Age at sample collection (in yrs)
+clinical_patient.json",age,,age,numeric,non-unique,optional,*,n,Age at sample collection (in yrs),Age,
 ,,,"Add to visit_attr > cliinical_patient.json
-Create property ""montreal_age"" (Montreal Classification)",age_at_diagnosis,numeric,non-unique,optional,*,y,Age at diagnosis (in yrs)
+Create property ""montreal_age"" (Montreal Classification)",age_at_diagnosis,numeric,non-unique,optional,*,y,Age at diagnosis (in yrs),Age at diagnosis,
 ,,,"Add to visit_attr > cliinical_patient.json
-Create property ""montreal_age_cat"" (Montreal Classification)",age_at_diagnosis.cat,character,non-unique,optional,A1|A2|A3,y,Sometimes Montreal classiciation of age at diagnosis is provided instead
+Create property ""montreal_age_cat"" (Montreal Classification)",age_at_diagnosis.cat,character,non-unique,optional,A1|A2|A3,y,Sometimes Montreal classiciation of age at diagnosis is provided instead,Montreal A classification,A1|A2|A3
 "OSDF values differ 
-(""african_american"", ""american_indian_or_alaska_native"",  ""asian"", ""caucasian"", ""hispanic_or_latino"", ""native_hawaiian"", ""ethnic_other"", ""unknown"")",subject.json,race,,race,character,non-unique,optional,white|african_american|asian_pacific_islander|native_american|more_than_one|other,y,
+(""african_american"", ""american_indian_or_alaska_native"",  ""asian"", ""caucasian"", ""hispanic_or_latino"", ""native_hawaiian"", ""ethnic_other"", ""unknown"")",subject.json,race,,race,character,non-unique,optional,white|african_american|asian_pacific_islander|native_american|more_than_one|other,y,,Race,White|African American|Asian-Pacific Islander|Native American|More than one|Other
 "OSDF values differ 
-(""male"", ""female"", ""unknown"")",subject.json,gender,,gender,character,non-unique,optional,m|f,y,
-,visit_attr > clinical_patient.json,bmi,,BMI,numeric,non-unique,optional,*,n,
+(""male"", ""female"", ""unknown"")",subject.json,gender,,gender,character,non-unique,optional,m|f,y,,Gender,Male|Female
+,visit_attr > clinical_patient.json,bmi,,BMI,numeric,non-unique,optional,*,n,,BMI,
 "OSDF value type differs
-type=string (drinks/week)",subject_attr.json,alcohol,,alcohol,character,non-unique,optional,y|n,n,
+type=string (drinks/week)",subject_attr.json,alcohol,,alcohol,character,non-unique,optional,y|n,n,,Alcohol,Yes|No
 "OSDF value type differs
-type=integer (packs per day x yrs smoked)",subject_attr.json,tobacco,,smoke,character,non-unique,optional,former|current|never,n,
-OSDF differs type=string,sample_attr.json,fecalcal,,calprotectin,numeric,non-unique,optional,*,n,Fecal calprotectin
+type=integer (packs per day x yrs smoked)",subject_attr.json,tobacco,,smoke,character,non-unique,optional,former|current|never,n,,Smoking history,Former|Current|Never
+OSDF differs type=string,sample_attr.json,fecalcal,,calprotectin,numeric,non-unique,optional,*,n,Fecal calprotectin,Calprotectin,
 "How often is this assessed? 
 If each visit, visit_attr > clinical_patient
 If once, subject_attr",,,"visit_attr > 
-clinical_patient.json",PCDAI,numeric,non-unique,optional,*,n,Pediatric Crohn?s Disease Activity Index (<= 19yrs old)
+clinical_patient.json",PCDAI,numeric,non-unique,optional,*,n,Pediatric Crohn?s Disease Activity Index (<= 19yrs old),PCDAI,
 JUST ADDED,,,"visit_attr > 
-clinical_patient.json",HBI,numeric,non-unique,optional,*,n,Harvey Bradshaw index (Crohn's disease)
+clinical_patient.json",HBI,numeric,non-unique,optional,*,n,Harvey Bradshaw index (Crohn's disease),HBI,
 JUST ADDED,,,"visit_attr > 
-clinical_patient.json",SCCAI,numeric,non-unique,optional,*,n,Simple Clinical Colitis Activity Index (SCCAI) can detect ulcerative colitis (UC) disease activity
-OSDF differs type=boolean,visit_attr > medications.json,abx,,antibiotics,character,non-unique,optional,y|n,n,
+clinical_patient.json",SCCAI,numeric,non-unique,optional,*,n,Simple Clinical Colitis Activity Index (SCCAI) can detect ulcerative colitis (UC) disease activity,SCCAI,
+OSDF differs type=boolean,visit_attr > medications.json,abx,,antibiotics,character,non-unique,optional,y|n,n,,Antibiotics,Yes|No
 ,,,"visit_attr > medications.json
-make array (list of meds)",antibiotics_supp,character,non-unique,optional,*,n,Additional antibiotics information
-OSDF differs type=boolean,visit_attr > medications.json,immunosupp,,immunosuppressants,character,non-unique,optional,y|n,n,
-,,,visit_attr > medications.json,immunosuppressants_supp,character,non-unique,optional,*,n,Additional immunosuppressant information
-OSDF differs type=boolean,visit_attr > medications.json,immunosupp,,steroids,character,non-unique,optional,y|n,n,
-,,,visit_attr > medications.json,steroids_supp,character,non-unique,optional,*,n,Additional steroids information
-,,,visit_attr > medications.json,mesalamine_5ASA,character,non-unique,optional,y|n,n,
-,,,visit_attr > medications.json,mesalamine_5ASA_supp,character,non-unique,optional,*,n,Additional 5ASA information
-,,,visit_attr > medications.json,biologics,character,non-unique,optional,y|n,n,
-,,,visit_attr > medications.json,biologics_supp,character,non-unique,optional,*,n,Additional biologics information
+make array (list of meds)",antibiotics_supp,character,non-unique,optional,*,n,Additional antibiotics information,Antibiotics (original encoding),
+OSDF differs type=boolean,visit_attr > medications.json,immunosupp,,immunosuppressants,character,non-unique,optional,y|n,n,,Immunosuppressants,Yes|No
+,,,visit_attr > medications.json,immunosuppressants_supp,character,non-unique,optional,*,n,Additional immunosuppressant information,Immunosuppressants (original encoding),
+OSDF differs type=boolean,visit_attr > medications.json,immunosupp,,steroids,character,non-unique,optional,y|n,n,,Steroids,Yes|No
+,,,visit_attr > medications.json,steroids_supp,character,non-unique,optional,*,n,Additional steroids information,Steroids (original encoding),
+,,,visit_attr > medications.json,mesalamine_5ASA,character,non-unique,optional,y|n,n,,5ASA,Yes|No
+,,,visit_attr > medications.json,mesalamine_5ASA_supp,character,non-unique,optional,*,n,Additional 5ASA information,5ASA (original encoding),
+,,,visit_attr > medications.json,biologics,character,non-unique,optional,y|n,n,,Biologics,Yes|No
+,,,visit_attr > medications.json,biologics_supp,character,non-unique,optional,*,n,Additional biologics information,Biologics (original encoding),
 "Need more info. Is this information captured by the visit date? 
-Or captured by 16s_dna_prep >mimarks.json > collection_date?",sample > mixs.json,collection_date,,time_point,numeric,non-unique,optional,*,n,"Time point ID	 if longitudinal study"
+Or captured by 16s_dna_prep >mimarks.json > collection_date?",sample > mixs.json,collection_date,,time_point,numeric,non-unique,optional,*,n,"Time point ID	 if longitudinal study",Timepoint,
 ,,,"sample > mixs.json. 
-Add field ""collection_date_supp""",time_point_supp,character,non-unique,optional,*,n,"Additional information on time points (importantly	 unit)"
+Add field ""collection_date_supp""",time_point_supp,character,non-unique,optional,*,n,"Additional information on time points (importantly	 unit)",Timepoint (original encoding),
 ,,,"subject_attr.json 
-Not subject.json because father, mother, and siblings are tracked in subject_attr.json",family,character,non-unique,optional,*,n,"Family ID	 if family study"
-,,,subject_attr.json,family_supp,character,non-unique,optional,*,n,"Additional information on family (importantly	 relationships)"
-,,,,method_MBX,character,non-unique,optional,LCMS|GCMS|HPLC|UPLC|MS-MS,n,LCMS (liquid chromatography with mass spectrometry)|GCMS (gas chromatography with mass spectrometry)|HPLC (High-performance liquid chromatography)|UPLC (ultra-performance liquid chromatography)|MS-MS(tandem mass spectrometry)
+Not subject.json because father, mother, and siblings are tracked in subject_attr.json",family,character,non-unique,optional,*,n,"Family ID	 if family study",Family ID,
+,,,subject_attr.json,family_supp,character,non-unique,optional,*,n,"Additional information on family (importantly	 relationships)",Family ID (original encoding),
+,,,,method_MBX,character,non-unique,optional,LCMS|GCMS|HPLC|UPLC|MS-MS,n,LCMS (liquid chromatography with mass spectrometry)|GCMS (gas chromatography with mass spectrometry)|HPLC (High-performance liquid chromatography)|UPLC (ultra-performance liquid chromatography)|MS-MS(tandem mass spectrometry),MBX method,LCMS|GCMS|HPLC|UPLC|MS-MS
