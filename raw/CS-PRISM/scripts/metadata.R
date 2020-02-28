@@ -94,7 +94,7 @@ meta_raw <- rbind(meta_raw_sampleID, meta_raw_GID)
 meta_curated <- meta_raw %>% 
   dplyr::mutate(
     dataset_name = "CS-PRISM",
-    PMID = "23013615",
+    PMID = "30531976",
     subject_accession = DonorID %>% as.character(),
     sample_accession = GID %>% as.character(),
     sample_accession_16S = GID %>% as.character(),
@@ -369,7 +369,7 @@ meta_curated[meta_curated$sample_accession %in% c("G19244", "G34176", "G89775"),
 
 meta_curated <- meta_curated[, template$col.name]
 if(check.template(meta_curated, template)) {
-  cat("Metadata for", study,"processed and check successful!\n")
+  cat("Metadata for", study, "processed and check successful!\n")
   write.table(meta_curated,
               file = paste0("processed/", study, "/metadata/metadata.txt"),
               quote = F,

@@ -4,26 +4,30 @@ source("scripts/misc/helpers.R")
 template <- readr::read_csv("data/template_new.csv",
                             col_types = "ccccccccccccc")
 for(study in c("BIDMC-FMT",
-              "CS-PRISM",
-              "Herfarth_CCFA_Microbiome_3B_combined",
-              "HMP2",
-              "Jansson_Lamendella_Crohns",
-              "LSS-PRISM",
-              "MucosalIBD",
-              "Pouchitis",
-              "PROTECT",
-              "RISK")) {
+               "CS-PRISM",
+               "Herfarth_CCFA_Microbiome_3B_combined",
+               "HMP2",
+               "Jansson_Lamendella_Crohns",
+               "LSS-PRISM",
+               "MucosalIBD",
+               "Pouchitis",
+               "PROTECT",
+               "RISK")) {
   meta_curated <- readr::read_tsv(paste0("processed/",
-                                             study, 
-                                             "/metadata/metadata.txt"),
-                                      col_types = template$var.class %>% 
-                                        dplyr::recode("character" = "c",
-                                                      "numeric" = "d") %>% 
-                                        paste(collapse = ""))
+                                         study, 
+                                         "/metadata/metadata.txt"),
+                                  col_types = template$var.class %>% 
+                                    dplyr::recode("character" = "c",
+                                                  "numeric" = "d") %>% 
+                                    paste(collapse = ""))
   
   meta_curated_recoded <- meta_curated %>% 
     dplyr::mutate(
-      `Dataset name` = dataset_name,
+      `Dataset name` = dataset_name %>% 
+        dplyr::recode("CS-PRISM" = "CS-PRISM_16S",
+                      "Herfarth_CCFA_Microbiome_3B_combined" = "Herfarth",
+                      "LSS-PRISM" = "LSS-PRISM_16S",
+                      "MucosalIBD" = "Mucosal_IBD"),
       `PMID` = PMID,
       `Subject accession` = subject_accession,
       `Sample accession` = sample_accession,
@@ -42,8 +46,8 @@ for(study in c("BIDMC-FMT",
                       "urine" = "Urine"),
       `Body site` = body_site %>% 
         dplyr::recode("ileum" = "Ileum",
-                       "colon" = "Colon",
-                       "rectum" = "Rectum"),
+                      "colon" = "Colon",
+                      "rectum" = "Rectum"),
       `Body site (original encoding)` = body_site_additional,
       `Disease` = disease %>% 
         dplyr::recode("CD" = "CD",
@@ -106,7 +110,7 @@ for(study in c("BIDMC-FMT",
                       "n" = "No"),
       `Biologics (original encoding)` = biologics_supp,
       `Timepoint` = time_point,
-      `Timepoint (original encoding)` = time_point_supp,
+      `Timepoint (original encoding)` = NA_character_,
       `Family ID` = family,
       `Family ID (original encoding)` = family_supp,
       `MBX method` = method_MBX
